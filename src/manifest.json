@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "Custom New Tab Widget Platform",
+    "version": "1.0",
+    "description": "A customizable new tab page with widget support",
+    "permissions": ["storage"],
+    "chrome_url_overrides": {
+        "newtab": "newtab.html"
+    },
+    "web_accessible_resources": [{
+        "resources": [
+            "*.js",
+            "core/**/*.js",
+            "widgets/**/*.js",
+            "widgets/**/*.css",
+            "styles/*.css"
+        ],
+        "matches": ["<all_urls>"]
+    }]
+} 

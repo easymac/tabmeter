@@ -1,0 +1,53 @@
+/* Base styles for all widgets */
+body {
+  margin: 0;
+  padding: var(--spacing-md);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text);
+  background-color: var(--color-background);
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all var(--transition-duration);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border: var(--border-width) solid transparent;
+  background: var(--color-secondary);
+  color: white;
+  cursor: pointer;
+  transition: opacity var(--transition-duration);
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* Inputs */
+input {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-background);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+} 
