@@ -6,7 +6,7 @@ body {
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
   color: var(--color-text);
-  background-color: var(--color-background);
+  background-color: transparent;
 }
 
 /* Links */
