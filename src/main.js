@@ -25,34 +25,34 @@ class WidgetRuntime {
     }
 
     initializeGridControls() {
-        // Create controls container
-        const controlsContainer = document.createElement('div');
-        controlsContainer.className = 'grid-controls';
+        // // Create controls container
+        // const controlsContainer = document.createElement('div');
+        // controlsContainer.className = 'grid-controls';
         
-        // Create drag toggle button
-        const dragToggle = document.createElement('button');
-        dragToggle.textContent = 'Toggle Drag';
-        dragToggle.onclick = () => {
-            const isDraggable = this.grid.opts.draggable;
-            this.grid.enableMove(!isDraggable);
-            dragToggle.classList.toggle('active', !isDraggable);
-        };
+        // // Create drag toggle button
+        // const dragToggle = document.createElement('button');
+        // dragToggle.textContent = 'Toggle Drag';
+        // dragToggle.onclick = () => {
+        //     const isDraggable = this.grid.opts.draggable;
+        //     this.grid.enableMove(!isDraggable);
+        //     dragToggle.classList.toggle('active', !isDraggable);
+        // };
         
-        // Create resize toggle button
-        const resizeToggle = document.createElement('button');
-        resizeToggle.textContent = 'Toggle Resize';
-        resizeToggle.onclick = () => {
-            const isResizable = this.grid.opts.resizable;
-            this.grid.enableResize(!isResizable);
-            resizeToggle.classList.toggle('active', !isResizable);
-        };
+        // // Create resize toggle button
+        // const resizeToggle = document.createElement('button');
+        // resizeToggle.textContent = 'Toggle Resize';
+        // resizeToggle.onclick = () => {
+        //     const isResizable = this.grid.opts.resizable;
+        //     this.grid.enableResize(!isResizable);
+        //     resizeToggle.classList.toggle('active', !isResizable);
+        // };
         
-        // Add buttons to controls container
-        controlsContainer.appendChild(dragToggle);
-        controlsContainer.appendChild(resizeToggle);
+        // // Add buttons to controls container
+        // controlsContainer.appendChild(dragToggle);
+        // controlsContainer.appendChild(resizeToggle);
         
-        // Insert controls before the widgets root
-        this.widgetsRoot.parentNode.insertBefore(controlsContainer, this.widgetsRoot);
+        // // Insert controls before the widgets root
+        // this.widgetsRoot.parentNode.insertBefore(controlsContainer, this.widgetsRoot);
     }
 
     async loadWidget(widgetId, config) {
@@ -95,11 +95,11 @@ class WidgetRuntime {
             // Inject default styles
             const doc = iframe.contentDocument;
             
-            // Inject main CSS variables
-            const mainStyles = document.createElement('link');
-            mainStyles.rel = 'stylesheet';
-            mainStyles.href = '/styles/main.css';
-            doc.head.insertBefore(mainStyles, doc.head.firstChild);
+            // Inject CSS variables
+            const variablesStyles = document.createElement('link');
+            variablesStyles.rel = 'stylesheet';
+            variablesStyles.href = '/styles/variables.css';
+            doc.head.insertBefore(variablesStyles, doc.head.firstChild);
             
             // Inject default widget styles
             const widgetStyles = document.createElement('link');

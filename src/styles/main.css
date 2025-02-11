@@ -1,3 +1,5 @@
+@import './variables.css';
+
 @font-face {
   font-family: 'Public Sans';
   src: url('../assets/fonts/PublicSans-VariableFont_wght.ttf') format('truetype');
@@ -12,54 +14,24 @@
   font-style: italic;
 }
 
-:root {
-  /* Colors */
-  --color-background: #ffffff;
-  --color-text: #333333;
-  --color-primary: #2196F3;
-  --color-secondary: #4CAF50;
-  --color-danger: #ff4444;
-  --color-border: #cccccc;
-  
-  /* Typography */
-  --font-family-base: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  --font-size-base: 1rem;
-  --font-size-small: 0.875rem;
-  --font-size-large: 1.125rem;
-  --line-height-base: 1.5;
-  
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  
-  /* Borders */
-  --border-radius-sm: 0.1875rem;
-  --border-radius-md: 0.375rem;
-  --border-radius-circle: 50%;
-  --border-width: 0.0625rem;
-  
-  /* Transitions */
-  --transition-duration: 0.2s;
-  
-  /* Shadows */
-  --shadow-sm: 0 0.0625rem 0.1875rem rgba(0,0,0,0.12);
-  --shadow-md: 0 0.25rem 0.375rem rgba(0,0,0,0.1);
+html, body {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body {
-  background-color: #333;
-  color: #fff;
+  background-color: var(--color-background);
+  color: var(--color-text);
   margin: 0;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-lg);
 }
 
 .widget-container {
-  border: 1px solid #ccc;
-  margin: 10px;
-  padding: 10px;
   display: inline-block;
+  box-sizing: border-box;
 }
 
 .widget-frame {
@@ -69,15 +41,11 @@ body {
 }
 
 .grid-stack {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  min-height: calc(100vh - 40px);
+  flex: 1;
 }
 
 .grid-stack-item-content {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid blue;
 }
 
 .grid-stack-item {
