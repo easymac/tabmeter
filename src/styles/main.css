@@ -44,15 +44,6 @@ body {
   flex: 1;
 }
 
-.grid-stack-item-content {
-  border: 1px solid blue;
-}
-
-.grid-stack-item {
-  min-width: 200px;
-  min-height: 200px;
-}
-
 .widget-container {
   width: 100%;
   height: 100%;

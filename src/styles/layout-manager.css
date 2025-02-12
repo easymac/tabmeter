@@ -1,0 +1,12 @@
+.editing-enabled {
+    border: 2px solid var(--color-primary);
+}
+
+.editing-enabled iframe {
+    pointer-events: none;
+}
+
+.editing-enabled .grid-stack-item-content {
+    border: 2px solid var(--color-primary);
+
+}

@@ -1,0 +1,52 @@
+.widget-alignment-controls {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    gap: 10px;
+    background: var(--widget-border-color, #333);
+    padding: 5px;
+    border-radius: 4px;
+    z-index: 1000;
+}
+
+.editing-enabled .grid-stack-item:hover .widget-alignment-controls {
+    display: flex;
+}
+
+.alignment-group {
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.align-btn {
+    border: none;
+    background: transparent;
+    color: white;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background-color 0.2s;
+}
+
+.align-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.align-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.align-btn i {
+    font-size: 14px;
+}
+
+.align-btn img {
+    width: 14px;
+    height: 14px;
+    filter: invert(1); /* Makes the SVG white */
+} 
