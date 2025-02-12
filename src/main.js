@@ -124,4 +124,5 @@ const runtime = createWidgetRuntime();
 
 // Load widgets
 runtime.loadWidget('clock', { timezone: 'UTC' });
-runtime.loadWidget('links', {}); 
+runtime.loadWidget('links', {});
+runtime.loadWidget('date', {}); 
