@@ -17,6 +17,8 @@ export function createLayoutManager(rootElement) {
         resizable: {
             handles: 'e,se,s,sw,w'
         },
+        disableDrag: true,
+        disableResize: true,
         float: true,
         staticGrid: false,
         disableOneColumnMode: true
