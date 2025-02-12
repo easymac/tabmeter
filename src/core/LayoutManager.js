@@ -206,12 +206,6 @@ export function createLayoutManager(rootElement) {
         toggleDragging(enable);
         toggleResizing(enable);
         widgetsRoot.classList.toggle('editing-enabled', enable);
-        
-        // Show/hide alignment controls based on editing mode
-        const controls = widgetsRoot.querySelectorAll('.widget-alignment-controls');
-        controls.forEach(control => {
-            control.style.display = enable ? 'flex' : 'none';
-        });
     }
 
     function openWidgetSettings(widgetId) {

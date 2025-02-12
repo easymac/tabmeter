@@ -10,3 +10,16 @@
     border: 2px solid var(--color-primary);
 
 }
+
+.widget-alignment-controls {
+    display: none;  /* Hidden by default */
+}
+
+.editing-enabled .widget-alignment-controls {
+    display: flex;  /* Show when editing is enabled */
+}
+
+/* Alignment groups layout */
+.widget-alignment-controls .alignment-group {
+    display: flex;
+}
