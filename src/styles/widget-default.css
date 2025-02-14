@@ -5,7 +5,6 @@ html {
 }
 body {
   margin: 0;
-  padding: var(--spacing-md);
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);

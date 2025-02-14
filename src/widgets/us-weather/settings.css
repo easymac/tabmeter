@@ -1,0 +1,25 @@
+#settings-container {
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+#status-message {
+    margin-top: var(--spacing-sm);
+    color: var(--color-text-secondary);
+}
+
+button {
+    margin-top: var(--spacing-sm);
+}
+
+#use-location {
+    background: var(--color-secondary);
+} 
