@@ -1,0 +1,50 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#photo-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+#photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: var(--border-radius-sm);
+    filter: grayscale(100%) contrast(0.8);
+    opacity: 0.8;
+}
+
+#photo-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-background);
+    mix-blend-mode: exclusion;
+    z-index: 1;
+}
+
+#caption {
+    margin-top: var(--spacing-xl);
+    color: var(--color-text-secondary);
+}
+
+#caption .title {
+    font-style: italic;
+}

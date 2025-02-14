@@ -144,4 +144,5 @@ const runtime = createWidgetRuntime();
 runtime.loadWidget('clock', { timezone: 'UTC' });
 runtime.loadWidget('links', {});
 runtime.loadWidget('date', {});
-runtime.loadWidget('countdown', { targetDate: '2026-08-07' }); 
+runtime.loadWidget('countdown', { targetDate: '2026-08-07' });
+runtime.loadWidget('photo-gallery', {}); 
