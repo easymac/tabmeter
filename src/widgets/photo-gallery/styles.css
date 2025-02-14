@@ -16,6 +16,7 @@ body {
     flex: 1;
     position: relative;
     overflow: hidden;
+    border-radius: var(--border-radius-sm);
 }
 
 #photo {
@@ -26,7 +27,6 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    border-radius: var(--border-radius-sm);
     filter: grayscale(100%) contrast(0.8);
     opacity: 0.8;
 }

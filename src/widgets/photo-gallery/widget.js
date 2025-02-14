@@ -72,13 +72,15 @@ async function initGallery() {
         const photoElement = document.getElementById('photo');
         
         const imageUrl = getImageUrl(selectedImage);
-        console.log(selectedImage, imageUrl);
+
         // Pre-load the image
         await loadImage(imageUrl);
         
         // Set the image source
         photoElement.src = imageUrl;
         photoElement.alt = selectedImage.title || 'Daily artwork';
+
+        photoElement.style.display = 'block';
 
         addImageCaption(selectedImage);
         
