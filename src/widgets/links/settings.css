@@ -1,0 +1,32 @@
+.links-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    background: var(--color-background);
+    border: var(--border-width) solid black;
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+#add-link-form {
+    margin: var(--spacing-md) 0;
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.delete-button {
+    background: var(--color-danger);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    cursor: pointer;
+} 

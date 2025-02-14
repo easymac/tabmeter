@@ -1,15 +1,32 @@
 import { createLayoutManager } from './core/LayoutManager.js';
+import { createStorageManager } from './core/StorageManager.js';
 
 // Create a widget bridge factory
-function createWidgetBridge(iframe) {
+function createWidgetBridge(iframe, widgetId) {
     const handlers = new Map();
+    const storageManager = createStorageManager();
 
     // Handle messages from iframe
     window.addEventListener('message', (event) => {
         if (event.source === iframe.contentWindow) {
-            const handler = handlers.get(event.data.type);
+            const data = event.data;
+            
+            // Add storage handling
+            if (data.type === 'STORAGE_GET') {
+                data.widgetId = widgetId;
+                storageManager.handleStorageGet(data, iframe.contentWindow);
+                return;
+            }
+            
+            if (data.type === 'STORAGE_SET') {
+                data.widgetId = widgetId;
+                storageManager.handleStorageSet(data, widgetId);
+                return;
+            }
+
+            const handler = handlers.get(data.type);
             if (handler) {
-                handler(event.data, iframe.contentWindow);
+                handler(data, iframe.contentWindow);
             }
         }
     });
@@ -46,7 +63,7 @@ function createWidgetRuntime() {
             id: widgetId,
             iframe,
             container,
-            bridge: createWidgetBridge(iframe)
+            bridge: createWidgetBridge(iframe, widgetId)
         };
 
         // Add to layout manager and store gridItem reference
@@ -102,10 +119,11 @@ function createWidgetRuntime() {
                 });
             });
 
-            // Initialize the widget
+            // Initialize the widget with its ID
             widget.bridge.sendMessage({ 
                 type: 'INIT', 
-                config 
+                config,
+                widgetId 
             });
         };
     }

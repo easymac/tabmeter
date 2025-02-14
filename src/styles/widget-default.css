@@ -1,4 +1,8 @@
 /* Base styles for all widgets */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-text) var(--color-background);
+}
 body {
   margin: 0;
   padding: var(--spacing-md);
@@ -11,13 +15,20 @@ body {
 
 /* Links */
 a {
-  color: var(--color-primary);
+  color: var(--color-text);
   text-decoration: none;
-  transition: all var(--transition-duration);
+  position: relative;
 }
 
-a:hover {
-  text-decoration: underline;
+a::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.75;
 }
 
 /* Buttons */
@@ -50,4 +61,5 @@ input {
 input:focus {
   outline: none;
   border-color: var(--color-primary);
-} 
+}
+

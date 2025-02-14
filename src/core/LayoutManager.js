@@ -4,6 +4,7 @@ export function createLayoutManager(rootElement) {
     const widgetsRoot = rootElement;
     let isDraggable = false;
     let isResizable = false;
+    let currentSettingsWidget = null;
     
     // Initialize GridStack
     const grid = GridStack.init({
@@ -211,8 +212,59 @@ export function createLayoutManager(rootElement) {
     }
 
     function openWidgetSettings(widgetId) {
-        console.log(`Opening settings for widget: ${widgetId}`);
+        const widget = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (!widget) return;
+        
+        const iframe = widget.querySelector('iframe');
+        if (!iframe) return;
+        
+        // Store current widget being configured
+        currentSettingsWidget = widgetId;
+        
+        // Switch to settings view
+        const currentSrc = iframe.src;
+        iframe.src = currentSrc.replace('index.html', 'settings.html');
+        
+        // Add settings mode indicator
+        widget.classList.add('settings-mode');
+        
+        // Add done button
+        const doneButton = document.createElement('button');
+        doneButton.className = 'settings-done-button';
+        doneButton.textContent = 'Done';
+        doneButton.onclick = () => closeWidgetSettings(widgetId);
+        widget.appendChild(doneButton);
     }
+
+    function closeWidgetSettings(widgetId) {
+        const widget = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (!widget) return;
+        
+        const iframe = widget.querySelector('iframe');
+        if (!iframe) return;
+        
+        // Switch back to main view
+        const currentSrc = iframe.src;
+        iframe.src = currentSrc.replace('settings.html', 'index.html');
+        
+        // Remove settings mode indicator
+        widget.classList.remove('settings-mode');
+        
+        // Remove done button
+        const doneButton = widget.querySelector('.settings-done-button');
+        if (doneButton) {
+            doneButton.remove();
+        }
+        
+        currentSettingsWidget = null;
+    }
+
+    // Add event listener for settings messages
+    window.addEventListener('message', (event) => {
+        if (event.data.type === 'SETTINGS_SAVED' && currentSettingsWidget) {
+            closeWidgetSettings(currentSettingsWidget);
+        }
+    });
 
     // Set up initial state
     setupContextMenu();
@@ -222,6 +274,7 @@ export function createLayoutManager(rootElement) {
         toggleDragging,
         toggleResizing,
         toggleEditing,
-        saveGridLayout
+        saveGridLayout,
+        closeWidgetSettings
     };
 }

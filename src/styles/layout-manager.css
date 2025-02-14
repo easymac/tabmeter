@@ -23,3 +23,24 @@
 .widget-alignment-controls .alignment-group {
     display: flex;
 }
+
+.settings-mode {
+    border: 2px solid var(--color-primary);
+}
+
+.settings-done-button {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.settings-done-button:hover {
+    opacity: 0.9;
+}
