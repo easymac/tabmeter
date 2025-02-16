@@ -72,8 +72,6 @@ async function updateWeather() {
 
         const forecastUrl = await getForecastUrl(location.latitude, location.longitude);
         const forecast = await getForecast(forecastUrl);
-
-        console.log(forecast);
         
         displayWeather(forecast);
     } catch (error) {
