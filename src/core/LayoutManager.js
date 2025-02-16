@@ -9,7 +9,7 @@ export function createLayoutManager(rootElement) {
     // Initialize GridStack
     const grid = GridStack.init({
         column: 24,
-        cellHeight: 200,
+        cellHeight: 104,
         margin: 10,
         animate: true,
         draggable: {
