@@ -25,7 +25,8 @@ function renderCountdowns() {
         
         const countdownInfo = document.createElement('div');
         countdownInfo.className = 'countdown-info';
-        countdownInfo.textContent = `${countdown.title} (${new Date(countdown.date).toLocaleDateString()})`;
+        const localDate = new Date(countdown.date + 'T00:00:00');
+        countdownInfo.textContent = `${countdown.title} (${localDate.toLocaleDateString()})`;
         
         const buttonsDiv = document.createElement('div');
         buttonsDiv.className = 'countdown-buttons';
@@ -80,6 +81,13 @@ async function togglePin(index) {
     renderCountdowns();
 }
 
+// Add this helper function to standardize date handling
+function normalizeDate(dateString) {
+    // Convert date string to local midnight
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toISOString().split('T')[0]; // Store in YYYY-MM-DD format
+}
+
 async function addCountdown() {
     const titleInput = document.getElementById('countdown-title-input');
     const dateInput = document.getElementById('countdown-date-input');
@@ -87,7 +95,7 @@ async function addCountdown() {
     if (titleInput.value && dateInput.value) {
         countdowns.push({
             title: titleInput.value,
-            date: dateInput.value,
+            date: normalizeDate(dateInput.value), // Normalize date on save
             pinned: false
         });
         sortCountdowns();
@@ -112,7 +120,7 @@ function editCountdown(index) {
     const dateInput = document.getElementById('countdown-date-input');
     
     titleInput.value = countdown.title;
-    dateInput.value = countdown.date;
+    dateInput.value = countdown.date; // Date input expects YYYY-MM-DD format
     
     const addButton = document.getElementById('add-countdown-button');
     addButton.textContent = 'Update Countdown';
@@ -120,7 +128,7 @@ function editCountdown(index) {
         if (titleInput.value && dateInput.value) {
             countdowns[index] = {
                 title: titleInput.value,
-                date: dateInput.value,
+                date: normalizeDate(dateInput.value), // Normalize date on save
                 pinned: countdown.pinned
             };
             sortCountdowns();

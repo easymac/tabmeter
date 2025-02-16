@@ -19,12 +19,14 @@ async function initialize() {
     setInterval(renderCountdowns, 1000 * 60 * 60);
 }
 
-function calculateDaysRemaining(targetDate) {
+function calculateDaysRemaining(dateString) {
+    // Get current date at local midnight
     const now = new Date();
-    // Set time to start of day to avoid time zone issues
     now.setHours(0, 0, 0, 0);
     
-    const target = new Date(targetDate + 'T00:00:00');
+    // Parse the target date at local midnight
+    const target = new Date(dateString + 'T00:00:00');
+    
     const diffTime = target - now;
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
@@ -32,8 +34,7 @@ function calculateDaysRemaining(targetDate) {
 function renderCountdowns() {
     const listElement = document.getElementById('countdowns-list');
     listElement.innerHTML = '';
-    
-    console.log(countdowns);
+
     // Sort countdowns: pinned first, then by days remaining
     countdowns.sort((a, b) => {
         if (a.pinned !== b.pinned) {
@@ -43,8 +44,6 @@ function renderCountdowns() {
         const daysB = calculateDaysRemaining(b.date);
         return daysA - daysB;
     });
-
-    console.log(countdowns);
     
     // Create containers for pinned and unpinned items
     const pinnedContainer = document.createElement('div');
@@ -67,7 +66,9 @@ function renderCountdowns() {
         
         const dateSpan = document.createElement('span');
         dateSpan.className = 'countdown-date';
-        dateSpan.textContent = new Date(countdown.date).toLocaleDateString();
+        // Create date object from YYYY-MM-DD string in local timezone
+        const localDate = new Date(countdown.date + 'T00:00:00');
+        dateSpan.textContent = localDate.toLocaleDateString();
         
         const daysSpan = document.createElement('span');
         daysSpan.className = 'countdown-days';
