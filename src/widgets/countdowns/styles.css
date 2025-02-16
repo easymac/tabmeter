@@ -1,0 +1,132 @@
+#countdowns-container {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#countdowns-list {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+    padding-top: 20px; /* To account for gradient overlays */
+    padding-bottom: 20px;
+}
+
+/* Hide scrollbar for Chrome/Safari */
+#countdowns-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Gradient overlays */
+#countdowns-container::before,
+#countdowns-container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.2s;
+    z-index: 1;
+}
+
+#countdowns-container::before {
+    top: 0;
+    background: linear-gradient(to bottom, 
+        var(--color-background) 0%,
+        transparent 100%
+    );
+}
+
+#countdowns-container::after {
+    bottom: 0;
+    background: linear-gradient(to top, 
+        var(--color-background) 0%,
+        transparent 100%
+    );
+}
+
+@supports (animation-timeline: scroll()) {
+    #countdowns-container::before {
+        animation: fade both linear;
+        animation-timeline: scroll(nearest);
+        animation-range: 0 20px;
+    }
+
+    #countdowns-container::after {
+        animation: fade both linear;
+        animation-timeline: scroll(nearest);
+        animation-range: calc(100% - 20px) 100%;
+    }
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+
+    &:hover {
+        .countdown-date {
+            display: block;
+        }
+        .countdown-days {
+            display: none;
+        }
+    }
+}
+
+.countdown-date {
+    color: var(--color-text-secondary);
+    display: none;
+    font-size: var(--font-size-small);
+}
+
+.countdown-days {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+}
+
+.pinned-countdowns {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.unpinned-countdowns {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.countdown-item.pinned .countdown-title {
+    position: relative;
+    --bg: rgba(255,255,255,0.1);
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -1px;
+        bottom: 0px;
+        left: -4px;
+        right: -4px;
+        background-color: var(--bg);
+        border-radius: var(--border-radius-sm);
+        z-index: -1;
+    }
+}

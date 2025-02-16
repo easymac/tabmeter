@@ -146,4 +146,5 @@ runtime.loadWidget('links', {});
 runtime.loadWidget('date', {});
 runtime.loadWidget('countdown', { targetDate: '2026-08-07' });
 runtime.loadWidget('photo-gallery', {});
-runtime.loadWidget('us-weather', {}); 
+runtime.loadWidget('us-weather', {});
+runtime.loadWidget('countdowns', {}); 

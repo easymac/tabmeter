@@ -1,0 +1,58 @@
+#settings-container {
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.countdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background: var(--color-background);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    position: relative;
+}
+
+.countdown-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+#add-countdown-form {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.edit-button {
+    background: var(--color-secondary);
+}
+
+.delete-button {
+    background: var(--color-danger);
+}
+
+button {
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    cursor: pointer;
+}
+
+.countdown-item.pinned {
+    border-color: var(--color-primary);
+    border-width: 2px;
+}
+
+.pin-button {
+    background: var(--color-primary);
+}
