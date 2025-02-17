@@ -1,10 +1,21 @@
 import { createContextMenu } from './ContextMenu.js';
 
+const AVAILABLE_WIDGETS = {
+    clock: { name: 'Clock', config: { timezone: 'UTC' } },
+    date: { name: 'Date', config: {} },
+    countdown: { name: 'Countdown', config: {} },
+    'us-weather': { name: 'Weather', config: {} },
+    links: { name: 'Links', config: {} },
+    countdowns: { name: 'Countdowns', config: {} },
+    'photo-gallery': { name: 'Photo Gallery', config: {} }
+};
+
 export function createLayoutManager(rootElement) {
     const widgetsRoot = rootElement;
     let isDraggable = false;
     let isResizable = false;
     let currentSettingsWidget = null;
+    let widgetSelector = null;
     
     // Initialize GridStack
     const grid = GridStack.init({
@@ -58,6 +69,13 @@ export function createLayoutManager(rootElement) {
         gridItemContent.appendChild(alignmentControls);
         gridItemContent.appendChild(widget.container);
         gridItem.appendChild(gridItemContent);
+        
+        // Add remove button
+        const removeButton = document.createElement('button');
+        removeButton.className = 'widget-remove-button';
+        removeButton.textContent = 'Remove';
+        removeButton.onclick = () => removeWidget(widget.id);
+        gridItem.appendChild(removeButton);
         
         await restoreWidgetPosition(widget.id, gridItem);
         grid.makeWidget(gridItem);
@@ -191,17 +209,39 @@ export function createLayoutManager(rootElement) {
             {
                 label: 'Widget Settings',
                 action: () => openWidgetSettings(widgetId)
+            },
+            { type: 'separator' },
+            {
+                label: 'Remove Widget',
+                action: () => removeWidget(widgetId),
+                className: 'danger'
             }
         ]);
     }
 
     function showGlobalContextMenu(x, y) {
-        contextMenu.show(x, y, [
+        const menuItems = [
             {
                 label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
                 action: () => toggleEditing()
+            },
+            { type: 'separator' },
+            {
+                label: 'Add Widget',
+                submenu: Object.entries(AVAILABLE_WIDGETS).map(([id, widget]) => ({
+                    label: widget.name,
+                    action: () => {
+                        window.postMessage({
+                            type: 'ADD_WIDGET',
+                            widgetId: id,
+                            config: widget.config
+                        }, '*');
+                    }
+                }))
             }
-        ]);
+        ];
+
+        contextMenu.show(x, y, menuItems);
     }
 
     function toggleEditing() {
@@ -269,8 +309,106 @@ export function createLayoutManager(rootElement) {
     // Set up initial state
     setupContextMenu();
 
+    async function removeWidget(widgetId) {
+        const gridItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (!gridItem) return;
+
+        // Remove from grid
+        grid.removeWidget(gridItem);
+
+        // Clean up storage
+        const keys = await chrome.storage.local.get(null);
+        const widgetPrefix = `widget_${widgetId}_`;
+        const keysToRemove = Object.keys(keys).filter(key => key.startsWith(widgetPrefix));
+        
+        if (keysToRemove.length > 0) {
+            await chrome.storage.local.remove(keysToRemove);
+        }
+
+        // Remove from layout
+        const layout = await chrome.storage.local.get('widgetLayout');
+        if (layout.widgetLayout) {
+            delete layout.widgetLayout[widgetId];
+            await chrome.storage.local.set({ widgetLayout: layout.widgetLayout });
+        }
+
+        // Remove from active widgets list
+        const result = await chrome.storage.local.get('activeWidgets');
+        if (result.activeWidgets) {
+            const activeWidgets = result.activeWidgets.filter(w => w.id !== widgetId);
+            await chrome.storage.local.set({ activeWidgets });
+        }
+
+        // Post message to trigger runtime cleanup
+        window.postMessage({
+            type: 'WIDGET_REMOVED',
+            widgetId
+        }, '*');
+    }
+
+    function createWidgetSelector() {
+        const selector = document.createElement('div');
+        selector.className = 'widget-selector';
+        
+        Object.entries(AVAILABLE_WIDGETS).forEach(([id, widget]) => {
+            const item = document.createElement('div');
+            item.className = 'widget-selector-item';
+            item.textContent = widget.name;
+            item.onclick = () => {
+                window.postMessage({
+                    type: 'ADD_WIDGET',
+                    widgetId: id,
+                    config: widget.config
+                }, '*');
+                hideWidgetSelector();
+            };
+            selector.appendChild(item);
+        });
+        
+        document.body.appendChild(selector);
+        return selector;
+    }
+
+    function showWidgetSelector(x, y) {
+        if (!widgetSelector) {
+            widgetSelector = createWidgetSelector();
+        }
+        widgetSelector.style.display = 'block';
+        widgetSelector.style.left = `${x}px`;
+        widgetSelector.style.top = `${y}px`;
+    }
+
+    function hideWidgetSelector() {
+        if (widgetSelector) {
+            widgetSelector.style.display = 'none';
+        }
+    }
+
+    function createAddWidgetButton() {
+        const button = document.createElement('button');
+        button.className = 'add-widget-button';
+        button.textContent = 'Add Widget';
+        button.onclick = (e) => {
+            const rect = button.getBoundingClientRect();
+            showWidgetSelector(rect.left, rect.top - 200); // Show above the button
+        };
+        widgetsRoot.appendChild(button);
+    }
+
+    // Add to document click handler
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.widget-selector') && 
+            !e.target.closest('.add-widget-button')) {
+            hideWidgetSelector();
+        }
+    });
+
+    // Add to initial setup
+    createAddWidgetButton();
+
     return {
         addWidget,
+        removeWidget,
         toggleDragging,
         toggleResizing,
         toggleEditing,

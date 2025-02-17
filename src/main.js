@@ -1,6 +1,9 @@
 import { createLayoutManager } from './core/LayoutManager.js';
 import { createStorageManager } from './core/StorageManager.js';
 
+// Add to the top of the file after imports
+let runtime;
+
 // Create a widget bridge factory
 function createWidgetBridge(iframe, widgetId) {
     const handlers = new Map();
@@ -43,7 +46,7 @@ function createWidgetRuntime() {
     const widgetsRoot = document.getElementById('widgets-root');
     const layoutManager = createLayoutManager(widgetsRoot);
 
-    async function loadWidget(widgetId, config) {
+    async function loadWidget(widgetId, config, skipSave = false) {
         // Create container
         const container = document.createElement('div');
         container.className = 'widget-container';
@@ -71,6 +74,11 @@ function createWidgetRuntime() {
         
         // Store widget reference
         widgets.set(widgetId, widget);
+
+        // Save active widgets list unless skipSave is true
+        if (!skipSave) {
+            await saveActiveWidgets();
+        }
         
         // Initialize widget once iframe loads
         iframe.onload = async () => {
@@ -128,23 +136,52 @@ function createWidgetRuntime() {
         };
     }
 
-    
+    async function saveActiveWidgets() {
+        const activeWidgets = Array.from(widgets.entries()).map(([id, widget]) => ({
+            id,
+            config: widget.config || {}
+        }));
+        await chrome.storage.local.set({ activeWidgets });
+    }
+
+    async function restoreWidgets() {
+        try {
+            const result = await chrome.storage.local.get('activeWidgets');
+            const activeWidgets = result.activeWidgets || [];
+            
+            // Load each widget
+            for (const widget of activeWidgets) {
+                await loadWidget(widget.id, widget.config, true); // Skip saving during restore
+            }
+        } catch (error) {
+            console.error('Failed to restore widgets:', error);
+        }
+    }
 
     return {
         loadWidget,
         getWidget: (id) => widgets.get(id),
-        getAllWidgets: () => Array.from(widgets.values())
+        getAllWidgets: () => Array.from(widgets.values()),
+        restoreWidgets
     };
 }
 
-// Initialize the runtime
-const runtime = createWidgetRuntime();
+// Update the initialization
+runtime = createWidgetRuntime();
 
-// Load widgets
-runtime.loadWidget('clock', { timezone: 'UTC' });
-runtime.loadWidget('links', {});
-runtime.loadWidget('date', {});
-runtime.loadWidget('countdown', { targetDate: '2026-08-07' });
-runtime.loadWidget('photo-gallery', {});
-runtime.loadWidget('us-weather', {});
-runtime.loadWidget('countdowns', {}); 
+// Restore widgets on startup
+runtime.restoreWidgets();
+
+// Update the message handler to include widget removal
+window.addEventListener('message', (event) => {
+    const message = event.data;
+    
+    if (message.type === 'ADD_WIDGET') {
+        runtime.loadWidget(message.widgetId, message.config);
+    }
+});
+
+// Remove the automatic widget loading at the bottom
+// runtime.loadWidget('clock', { timezone: 'UTC' });
+// runtime.loadWidget('links', {});
+// etc... 
