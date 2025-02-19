@@ -21,7 +21,7 @@ export function createLayoutManager(rootElement) {
     const grid = GridStack.init({
         column: 24,
         cellHeight: 104,
-        margin: 10,
+        margin: 0,
         animate: true,
         draggable: {
             handle: '.widget-container'
