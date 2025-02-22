@@ -27,6 +27,10 @@ a {
   position: relative;
 }
 
+a:hover {
+  color: color-mix(in hsl, var(--color-text), white 50%);
+}
+
 a::after {
   content: '';
   position: absolute;
