@@ -84,17 +84,41 @@ function createWidgetRuntime() {
         iframe.onload = async () => {
             const doc = iframe.contentDocument;
             
+            // Manually add a style element to the body
+            // to hide the widget until the styles are loaded
+            const style = document.createElement('style');
+            style.textContent = 'body { opacity: 0; }';
+            doc.head.insertBefore(style, doc.head.firstChild);
+
+            // Create a promise that resolves when all stylesheets are loaded
+            const styleLoadPromises = [];
+            
             // Inject CSS variables
             const variablesStyles = document.createElement('link');
             variablesStyles.rel = 'stylesheet';
             variablesStyles.href = '/styles/variables.css';
+            styleLoadPromises.push(new Promise(resolve => {
+                variablesStyles.onload = resolve;
+            }));
             doc.head.insertBefore(variablesStyles, doc.head.firstChild);
             
             // Inject default widget styles
             const widgetStyles = document.createElement('link');
             widgetStyles.rel = 'stylesheet';
             widgetStyles.href = '/styles/widget-default.css';
+            styleLoadPromises.push(new Promise(resolve => {
+                widgetStyles.onload = resolve;
+            }));
             doc.head.insertBefore(widgetStyles, doc.head.firstChild);
+
+            // Wait for all stylesheets to load
+            await Promise.all(styleLoadPromises);
+
+            console.log('styles-loaded');
+            
+            // Remove the style element from the body
+            // to show the widget
+            style.textContent = 'body { opacity: 1; }';
             
             // Set up event bubbling from iframe
             const eventTypes = ['contextmenu'];

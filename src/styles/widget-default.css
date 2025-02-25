@@ -13,6 +13,11 @@ body {
   font-size: 14px;
   box-sizing: border-box;
   padding: var(--spacing-lg);
+  transition: opacity 0.1s ease-in-out;
+}
+
+:root.styles-loaded body {
+  opacity: 1;
 }
 
 * {
