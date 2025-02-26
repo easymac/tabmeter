@@ -113,8 +113,6 @@ function createWidgetRuntime() {
 
             // Wait for all stylesheets to load
             await Promise.all(styleLoadPromises);
-
-            console.log('styles-loaded');
             
             // Remove the style element from the body
             // to show the widget
