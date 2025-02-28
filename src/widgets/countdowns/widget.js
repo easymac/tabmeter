@@ -54,6 +54,11 @@ function renderCountdowns() {
     countdowns.forEach(countdown => {
         const daysRemaining = calculateDaysRemaining(countdown.date);
         
+        // Skip if countdown has elapsed
+        if (daysRemaining <= -1) {
+            return;
+        }
+        
         const itemDiv = document.createElement('div');
         itemDiv.className = 'countdown-item';
         if (countdown.pinned) {
@@ -72,7 +77,9 @@ function renderCountdowns() {
         
         const daysSpan = document.createElement('span');
         daysSpan.className = 'countdown-days';
-        daysSpan.textContent = `${daysRemaining} days`;
+        daysSpan.textContent = daysRemaining === 0 ? 'Today!' : 
+                              daysRemaining === 1 ? '1 day' :
+                              `${daysRemaining} days`;
         
         itemDiv.appendChild(titleSpan);
         itemDiv.appendChild(dateSpan);
