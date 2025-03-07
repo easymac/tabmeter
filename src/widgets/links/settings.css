@@ -8,6 +8,57 @@
     border: var(--border-width) solid black;
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-sm);
+    cursor: default;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border 0.15s ease, background 0.15s ease;
+}
+
+#links-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    min-height: 50px;
+}
+
+.drag-handle {
+    margin-right: var(--spacing-sm);
+    cursor: grab;
+    font-size: 1.2em;
+    color: var(--color-text-secondary, #666);
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+.drag-handle:hover {
+    color: var(--color-primary, #4a90e2);
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.link-info {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 var(--spacing-sm);
+}
+
+/* Drag and drop visual feedback */
+.links-item.dragging {
+    opacity: 0.6;
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+    border: var(--border-width) dashed var(--color-primary, #4a90e2);
+    z-index: 10;
+}
+
+.links-item.drop-target {
+    border: var(--border-width) dashed var(--color-primary, #4a90e2);
+    background: var(--color-background-hover, #f5f5f5);
+    transform: scale(1.01);
 }
 
 #add-link-form {
@@ -29,4 +80,28 @@ input {
     border-radius: var(--border-radius-sm);
     padding: var(--spacing-xs) var(--spacing-sm);
     cursor: pointer;
+}
+
+.edit-button {
+    background: var(--color-primary, #4a90e2);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    margin-right: var(--spacing-sm);
+    cursor: pointer;
+}
+
+#cancel-edit-button {
+    background: var(--color-neutral, #888);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    cursor: pointer;
+}
+
+.link-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
 } 
