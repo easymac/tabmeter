@@ -22,7 +22,7 @@ async function initialize() {
     if (githubUsername && githubToken) {
         await fetchContributions();
         renderHeatmap();
-        updateUsernameDisplay();
+        // updateUsernameDisplay();
     } else {
         displayConfigurationMessage();
     }
@@ -82,6 +82,8 @@ async function fetchContributions() {
         // Store the weeks data directly 
         contributionsData = data.data.user.contributionsCollection.contributionCalendar.weeks;
         
+        console.log("Contributions data:", contributionsData);
+
         // Force data reload including today
         const today = new Date().toISOString().split('T')[0];
         console.log("Today's date:", today);
@@ -104,12 +106,13 @@ function getContributionLevel(count) {
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
+    const date = new Date(dateString + 'T00:00:00Z'); // Force UTC
     return date.toLocaleDateString(undefined, { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
-        day: 'numeric' 
+        day: 'numeric',
+        timeZone: 'UTC'
     });
 }
 
@@ -121,58 +124,57 @@ function renderHeatmap() {
         container.innerHTML = '<div style="color: #b0b0b6; padding: 20px;">No contribution data available.</div>';
         return;
     }
+
+    // Create a map to track unique months
+    const months = new Map();
     
-    // Process each week directly in chronological order
-    contributionsData.forEach(week => {
-        // Sort days by date to ensure they're in chronological order
-        const sortedDays = [...week.contributionDays].sort((a, b) => {
-            return new Date(a.date) - new Date(b.date);
-        });
+    // Process weeks in reverse order
+    for (let i = contributionsData.length - 1; i >= 0; i--) {
+        const week = contributionsData[i];
+        const monthString = new Date(week.firstDay + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+        console.log(week.firstDay);
+        const month = week.firstDay.split('-').slice(0, 2).join('-');
+        console.log(month);
         
+        // Create month if it doesn't exist
+        if (!months.has(month)) {
+            const monthContainer = document.createElement('div');
+            monthContainer.className = 'month-container';
+
+            const monthText = document.createElement('div');
+            monthText.className = 'month-text';
+            monthText.textContent = monthString;
+            monthContainer.appendChild(monthText);
+            
+            const weeksContainer = document.createElement('div');
+            weeksContainer.className = 'weeks-container';
+            monthContainer.appendChild(weeksContainer);
+            
+            months.set(month, {
+                monthContainer,
+                weeksContainer
+            });
+            container.appendChild(monthContainer);
+        }
+
         const weekRow = document.createElement('div');
         weekRow.className = 'week-row';
-        
-        // Fill in each day in the week (ensuring we have 7 days)
-        const days = [];
-        const startDate = new Date(week.firstDay);
-        
-        // Create 7 days starting from the week's first day
-        for (let i = 0; i < 7; i++) {
-            const currentDate = new Date(startDate);
-            currentDate.setDate(startDate.getDate() + i);
-            const currentDateStr = currentDate.toISOString().split('T')[0];
-            
-            // Find if we have data for this day
-            const dayData = sortedDays.find(day => day.date === currentDateStr);
-            
+        months.get(month).weeksContainer.appendChild(weekRow);
+
+        // Process days in reverse order
+        const days = [...week.contributionDays].reverse();
+        for (const day of days) {
+            const level = getContributionLevel(day.contributionCount);
+    
             const cell = document.createElement('div');
-            
-            if (dayData) {
-                // If we have data for this day
-                const level = getContributionLevel(dayData.contributionCount);
-                cell.className = `contribution-cell contribution-level-${level}`;
-                
-                const tooltip = document.createElement('div');
-                tooltip.className = 'contribution-tooltip';
-                tooltip.textContent = `${dayData.contributionCount} contributions on ${formatDate(dayData.date)}`;
-                
-                cell.appendChild(tooltip);
-            } else {
-                // Empty cell for days without data
-                cell.className = 'contribution-cell empty-cell';
-                
-                // Create tooltip for empty days too
-                const tooltip = document.createElement('div');
-                tooltip.className = 'contribution-tooltip';
-                tooltip.textContent = `0 contributions on ${formatDate(currentDateStr)}`;
-                cell.appendChild(tooltip);
-            }
-            
-            days.push(cell);
+            cell.className = `contribution-cell contribution-level-${level}`;
+    
+            const tooltip = document.createElement('div');
+            tooltip.className = 'contribution-tooltip';
+            tooltip.textContent = `${day.contributionCount} contributions on ${formatDate(day.date)}`;
+    
+            cell.appendChild(tooltip);
+            weekRow.appendChild(cell);
         }
-        
-        // Add all days to the row
-        days.forEach(day => weekRow.appendChild(day));
-        container.appendChild(weekRow);
-    });
-} 
+    }
+}
