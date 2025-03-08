@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+    <div id="settings-container">
+        <div class="setting-group">
+            <label for="github-username">GitHub Username</label>
+            <input type="text" id="github-username" placeholder="Enter your GitHub username">
+        </div>
+        
+        <div class="setting-group">
+            <label for="github-token">Personal Access Token</label>
+            <div class="token-input-container">
+                <input type="password" id="github-token" placeholder="Enter your GitHub personal access token">
+                <button id="toggle-token-visibility" type="button">Show</button>
+            </div>
+            <div class="help-text">
+                The token needs the <code>read:user</code> scope. 
+                <a href="https://github.com/settings/tokens" target="_blank">Generate a token</a>
+            </div>
+        </div>
+        
+        <div class="setting-group">
+            <button id="save-settings">Save Settings</button>
+            <div id="status-message"></div>
+        </div>
+    </div>
+    <script type="module" src="settings.js"></script>
+</body>
+</html> 

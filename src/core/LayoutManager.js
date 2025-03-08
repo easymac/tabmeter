@@ -7,7 +7,8 @@ const AVAILABLE_WIDGETS = {
     'us-weather': { name: 'Weather', config: {} },
     links: { name: 'Links', config: {} },
     countdowns: { name: 'Countdowns', config: {} },
-    'photo-gallery': { name: 'Photo Gallery', config: {} }
+    'photo-gallery': { name: 'Photo Gallery', config: {} },
+    'github-heatmap': { name: 'Github Heatmap', config: {} }
 };
 
 export function createLayoutManager(rootElement) {

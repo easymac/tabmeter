@@ -1,0 +1,81 @@
+#github-heatmap-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: var(--spacing-md, 12px);
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    color: #e1e1e3;
+    background-color: transparent;
+}
+
+#github-username {
+    font-weight: 600;
+    margin-bottom: var(--spacing, 8px);
+    font-size: 1rem;
+    color: #e1e1e3;
+}
+
+#contributions-heatmap {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: auto;
+    padding: 10px 0;
+}
+
+.week-row {
+    display: grid;
+    grid-template-columns: repeat(7, 10px);
+    column-gap: 3px;
+    height: 10px;
+    margin-bottom: 3px;
+}
+
+.contribution-cell {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    transition: transform 0.1s ease;
+    position: relative;
+}
+
+.contribution-cell.empty-cell {
+    background-color: rgba(45, 51, 59, 0.5); /* Semi-transparent version of level-0 */
+}
+
+.contribution-cell:hover {
+    transform: scale(1.2);
+    z-index: 10;
+}
+
+.contribution-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 30, 32, 0.95);
+    color: #e1e1e3;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 100;
+    border: 1px solid #2d2d30;
+    margin-bottom: 4px;
+}
+
+.contribution-cell:hover .contribution-tooltip {
+    opacity: 1;
+}
+
+/* Dark theme GitHub-inspired contribution colors */
+.contribution-level-0 { background-color: #2d333b; }
+.contribution-level-1 { background-color: #0e4429; }
+.contribution-level-2 { background-color: #006d32; }
+.contribution-level-3 { background-color: #26a641; }
+.contribution-level-4 { background-color: #39d353; } 
