@@ -2,13 +2,6 @@
     overflow-x: clip;
 }
 
-#github-username {
-    font-weight: 600;
-    margin-bottom: var(--spacing, 8px);
-    font-size: 1rem;
-    color: #e1e1e3;
-}
-
 #contributions-heatmap {
     display: flex;
     flex-direction: column;
@@ -17,7 +10,7 @@
 
 .month-container {
     display: flex;
-    gap: 3px;
+    gap: 10px;
 }
 
 .month-text {
@@ -78,7 +71,7 @@
 }
 
 /* Dark theme GitHub-inspired contribution colors */
-.contribution-level-0 { background-color: #2d333b; }
+.contribution-level-0 { background-color: #2d333b55; }
 .contribution-level-1 { background-color: #0e4429; }
 .contribution-level-2 { background-color: #006d32; }
 .contribution-level-3 { background-color: #26a641; }

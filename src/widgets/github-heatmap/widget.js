@@ -4,6 +4,7 @@ let storage;
 let githubUsername = '';
 let githubToken = '';
 let contributionsData = [];
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 // Initialize
 window.addEventListener('message', async (event) => {
@@ -22,15 +23,9 @@ async function initialize() {
     if (githubUsername && githubToken) {
         await fetchContributions();
         renderHeatmap();
-        // updateUsernameDisplay();
     } else {
         displayConfigurationMessage();
     }
-}
-
-function updateUsernameDisplay() {
-    const usernameElement = document.getElementById('github-username');
-    usernameElement.textContent = `@${githubUsername}'s contributions`;
 }
 
 function displayConfigurationMessage() {
@@ -44,6 +39,22 @@ function displayConfigurationMessage() {
 
 async function fetchContributions() {
     try {
+        // Check if cached data exists and is still valid
+        const cachedTimestamp = await storage.get('contributionsTimestamp') || 0;
+        const currentTime = Date.now();
+        
+        // If cache is valid, use cached data
+        if (currentTime - cachedTimestamp < CACHE_DURATION) {
+            const cachedData = await storage.get('contributionsData');
+            if (cachedData) {
+                console.log("Using cached GitHub contributions data");
+                contributionsData = JSON.parse(cachedData);
+                return;
+            }
+        }
+        
+        // Cache is invalid or doesn't exist, fetch fresh data
+        console.log("Fetching fresh GitHub contributions data");
         const query = `
             query {
                 user(login: "${githubUsername}") {
@@ -81,6 +92,10 @@ async function fetchContributions() {
 
         // Store the weeks data directly 
         contributionsData = data.data.user.contributionsCollection.contributionCalendar.weeks;
+        
+        // Cache the data and timestamp
+        await storage.set('contributionsData', JSON.stringify(contributionsData));
+        await storage.set('contributionsTimestamp', currentTime);
         
         console.log("Contributions data:", contributionsData);
 
