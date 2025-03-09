@@ -47,14 +47,12 @@ async function fetchContributions() {
         if (currentTime - cachedTimestamp < CACHE_DURATION) {
             const cachedData = await storage.get('contributionsData');
             if (cachedData) {
-                console.log("Using cached GitHub contributions data");
                 contributionsData = JSON.parse(cachedData);
                 return;
             }
         }
         
         // Cache is invalid or doesn't exist, fetch fresh data
-        console.log("Fetching fresh GitHub contributions data");
         const query = `
             query {
                 user(login: "${githubUsername}") {
@@ -96,12 +94,7 @@ async function fetchContributions() {
         // Cache the data and timestamp
         await storage.set('contributionsData', JSON.stringify(contributionsData));
         await storage.set('contributionsTimestamp', currentTime);
-        
-        console.log("Contributions data:", contributionsData);
 
-        // Force data reload including today
-        const today = new Date().toISOString().split('T')[0];
-        console.log("Today's date:", today);
     } catch (error) {
         console.error('Error fetching GitHub contributions:', error);
         document.getElementById('contributions-heatmap').innerHTML = `
@@ -147,9 +140,7 @@ function renderHeatmap() {
     for (let i = contributionsData.length - 1; i >= 0; i--) {
         const week = contributionsData[i];
         const monthString = new Date(week.firstDay + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
-        console.log(week.firstDay);
         const month = week.firstDay.split('-').slice(0, 2).join('-');
-        console.log(month);
         
         // Create month if it doesn't exist
         if (!months.has(month)) {
