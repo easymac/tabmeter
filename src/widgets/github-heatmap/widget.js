@@ -164,7 +164,7 @@ function renderHeatmap() {
         months.get(month).weeksContainer.appendChild(weekRow);
 
         // Process days in reverse order
-        const days = [...week.contributionDays].reverse();
+        const days = [...week.contributionDays];
         for (const day of days) {
             const level = getContributionLevel(day.contributionCount);
     
