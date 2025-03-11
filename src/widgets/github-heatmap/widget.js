@@ -115,13 +115,9 @@ function getContributionLevel(count) {
 
 function formatDate(dateString) {
     const date = new Date(dateString + 'T00:00:00Z'); // Force UTC
-    return date.toLocaleDateString(undefined, { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric',
-        timeZone: 'UTC'
-    });
+    const month = date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+    const day = date.toLocaleString('en-US', { day: '2-digit', timeZone: 'UTC' });
+    return `${month} ${day}`;
 }
 
 function renderHeatmap() {
@@ -177,7 +173,7 @@ function renderHeatmap() {
     
             const tooltip = document.createElement('div');
             tooltip.className = 'contribution-tooltip';
-            tooltip.textContent = `${day.contributionCount} contributions on ${formatDate(day.date)}`;
+            tooltip.textContent = `${day.contributionCount} on ${formatDate(day.date)}`;
     
             cell.appendChild(tooltip);
             weekRow.appendChild(cell);
