@@ -168,15 +168,33 @@ function renderHeatmap() {
         for (const day of days) {
             const level = getContributionLevel(day.contributionCount);
     
+            const anchorName = new Date(day.date).getTime();
+
             const cell = document.createElement('div');
+            cell.style.cssText = `anchor-name: --${anchorName};`;
             cell.className = `contribution-cell contribution-level-${level}`;
+
+            cell.addEventListener('mouseenter', () => {
+                setTooltipPosition(tooltip, anchorName);
+                setTooltipContent(tooltip, `${day.contributionCount} on ${formatDate(day.date)}`);
+            });
     
-            const tooltip = document.createElement('div');
-            tooltip.className = 'contribution-tooltip';
-            tooltip.textContent = `${day.contributionCount} on ${formatDate(day.date)}`;
-    
-            cell.appendChild(tooltip);
             weekRow.appendChild(cell);
         }
     }
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'contribution-tooltip';
+    
+    setTooltipContent(tooltip, 'Tooltip');
+    tooltip.style.cssText = `position-anchor: --${new Date().getTime()};`;
+    container.appendChild(tooltip);
+}
+
+function setTooltipPosition(tooltip, anchorName) {
+    tooltip.style.cssText = `position-anchor: --${anchorName};`;
+}
+
+function setTooltipContent(tooltip, content) {
+    tooltip.textContent = content;
 }
