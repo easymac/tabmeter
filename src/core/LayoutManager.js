@@ -8,7 +8,8 @@ const AVAILABLE_WIDGETS = {
     links: { name: 'Links', config: {} },
     countdowns: { name: 'Countdowns', config: {} },
     'photo-gallery': { name: 'Photo Gallery', config: {} },
-    'github-heatmap': { name: 'Github Heatmap', config: {} }
+    'github-heatmap': { name: 'Github Heatmap', config: {} },
+    'horoscope': { name: 'Horoscope', config: {} }
 };
 
 export function createLayoutManager(rootElement) {
