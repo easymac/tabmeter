@@ -42,9 +42,9 @@ async function getHoroscope(sign) {
     }
 
     try {
-        console.log('Getting horoscope for sign:', sign);
         const apiUrl = `https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=${sign}&day=TODAY`;
-        const response = await fetch(apiUrl);
+        const corsProxy = 'https://corsproxy.io/?url=';
+        const response = await fetch(corsProxy + apiUrl);
         
         if (!response.ok) {
             throw new Error(`API error: ${response.status}`);
