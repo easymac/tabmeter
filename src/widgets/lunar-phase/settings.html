@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+    <div id="settings-container">
+        <div class="input-group">
+            <label>Hemisphere:</label>
+            <div class="toggle-container">
+                <input type="radio" id="northern" name="hemisphere" value="northern" checked>
+                <label for="northern">Northern</label>
+                <input type="radio" id="southern" name="hemisphere" value="southern">
+                <label for="southern">Southern</label>
+            </div>
+            <p class="setting-info">Different hemispheres see the moon differently.</p>
+        </div>
+        <button id="save-settings">Save Settings</button>
+        <div id="status-message"></div>
+    </div>
+    <script type="module" src="settings.js"></script>
+</body>
+</html> 

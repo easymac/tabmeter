@@ -9,7 +9,8 @@ const AVAILABLE_WIDGETS = {
     countdowns: { name: 'Countdowns', config: {} },
     'photo-gallery': { name: 'Photo Gallery', config: {} },
     'github-heatmap': { name: 'Github Heatmap', config: {} },
-    'horoscope': { name: 'Horoscope', config: {} }
+    'horoscope': { name: 'Horoscope', config: {} },
+    'lunar-phase': { name: 'Lunar Phase', config: {} }
 };
 
 export function createLayoutManager(rootElement) {

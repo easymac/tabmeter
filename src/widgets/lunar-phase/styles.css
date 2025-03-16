@@ -1,0 +1,24 @@
+body {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#lunar-phase-container {
+  text-align: right;
+  width: 100%;
+}
+
+#moon-emoji {
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-large);
+}
+
+#phase-name {
+  margin-bottom: var(--spacing-sm);
+}
+
+#next-full-moon {
+  color: var(--color-text-secondary);
+} 
