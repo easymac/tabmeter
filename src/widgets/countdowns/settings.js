@@ -144,8 +144,21 @@ function editCountdown(index) {
     };
 }
 
+async function removeExpiredCountdowns() {
+    const currentCountdowns = countdowns.filter(countdown => {
+        const daysRemaining = calculateDaysRemaining(countdown.date);
+        return daysRemaining >= 0;
+    });
+    
+    if (currentCountdowns.length !== countdowns.length) {
+        countdowns = currentCountdowns;
+        await storage.set('countdowns', countdowns);
+    }
+}
+
 async function initialize() {
     countdowns = await storage.get('countdowns') || [];
+    await removeExpiredCountdowns();
     sortCountdowns();
     renderCountdowns();
     
