@@ -18,6 +18,9 @@ async function initSettings() {
         document.getElementById('longitude').value = locationData.longitude;
     }
 
+    const temperatureUnit = await storage.get('temperatureUnit') || 'fahrenheit';
+    document.querySelector(`input[name="temperatureUnit"][value="${temperatureUnit}"]`).checked = true;
+
     document.getElementById('use-location').addEventListener('click', getCurrentLocation);
     document.getElementById('save-settings').addEventListener('click', saveSettings);
 }
@@ -41,6 +44,7 @@ function getCurrentLocation() {
 async function saveSettings() {
     const latitude = parseFloat(document.getElementById('latitude').value);
     const longitude = parseFloat(document.getElementById('longitude').value);
+    const temperatureUnit = document.querySelector('input[name="temperatureUnit"]:checked').value;
     
     if (isNaN(latitude) || isNaN(longitude)) {
         document.getElementById('status-message').textContent = 'Please enter valid coordinates';
@@ -48,5 +52,6 @@ async function saveSettings() {
     }
 
     await storage.set('location', { latitude, longitude });
+    await storage.set('temperatureUnit', temperatureUnit);
     window.parent.postMessage({ type: 'SETTINGS_SAVED' }, '*');
 } 

@@ -39,6 +39,10 @@ async function getWeatherData(lat, lng) {
     return data;
 }
 
+function convertFahrenheitToCelsius(fahrenheit) {
+    return (fahrenheit - 32) * 5/9;
+}
+
 async function updateWeather() {
     try {
         const location = await storage.get('location');
@@ -86,14 +90,23 @@ function getWeatherDescription(code) {
     return weatherCodes[code] || 'Unknown weather';
 }
 
-function displayWeather(weatherData) {
+async function displayWeather(weatherData) {
     const current = weatherData.current;
+    const temperatureUnit = await storage.get('temperatureUnit') || 'fahrenheit';
     
     document.getElementById('description').textContent = 
         getWeatherDescription(current.weather_code);
 
+    let temperature = current.apparent_temperature;
+    let unit = 'F';
+    
+    if (temperatureUnit === 'celsius') {
+        temperature = convertFahrenheitToCelsius(temperature);
+        unit = 'C';
+    }
+
     document.getElementById('temperature').textContent = 
-        `Feels like ${Math.round(current.apparent_temperature)}°F`;
+        `Feels like ${Math.round(temperature)}°${unit}`;
 }
 
 function displayError(message) {
