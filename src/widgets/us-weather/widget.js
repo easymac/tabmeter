@@ -93,7 +93,7 @@ function displayWeather(weatherData) {
         getWeatherDescription(current.weather_code);
 
     document.getElementById('temperature').textContent = 
-        `Feels like ${current.apparent_temperature}°F`;
+        `Feels like ${Math.round(current.apparent_temperature)}°F`;
 }
 
 function displayError(message) {
