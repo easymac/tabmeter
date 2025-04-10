@@ -10,7 +10,8 @@ const AVAILABLE_WIDGETS = {
     'photo-gallery': { name: 'Photo Gallery', config: {} },
     'github-heatmap': { name: 'Github Heatmap', config: {} },
     'horoscope': { name: 'Horoscope', config: {} },
-    'lunar-phase': { name: 'Lunar Phase', config: {} }
+    'lunar-phase': { name: 'Lunar Phase', config: {} },
+    'weather-forecast': { name: 'Weather Forecast', config: {} },
 };
 
 export function createLayoutManager(rootElement) {
