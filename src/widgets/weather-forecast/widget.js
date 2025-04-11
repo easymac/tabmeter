@@ -104,7 +104,8 @@ function getWeatherDescription(code) {
 
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    // Return just the first letter of the weekday
+    return date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0);
 }
 
 function displayWeatherForecast(weatherData, temperatureUnit) {
@@ -116,7 +117,6 @@ function displayWeatherForecast(weatherData, temperatureUnit) {
     
     for (let i = 0; i < days; i++) {
         const day = daily.time[i];
-        const weatherCode = daily.weathercode[i];
         const maxTemp = Math.round(daily.temperature_2m_max[i]);
         const minTemp = Math.round(daily.temperature_2m_min[i]);
         const precipProb = daily.precipitation_probability_max[i];
@@ -124,27 +124,33 @@ function displayWeatherForecast(weatherData, temperatureUnit) {
         const dayElement = document.createElement('div');
         dayElement.className = 'forecast-day';
         
+        // Create precipitation indicator
+        const precipIndicator = document.createElement('div');
+        precipIndicator.className = 'precipitation-indicator';
+        precipIndicator.style.height = `${precipProb}%`;
+        
+        // Create content container
+        const contentContainer = document.createElement('div');
+        contentContainer.className = 'forecast-content';
+        
+        const highTemp = document.createElement('div');
+        highTemp.className = 'forecast-temp-high';
+        highTemp.textContent = `${maxTemp}°`;
+        
+        const lowTemp = document.createElement('div');
+        lowTemp.className = 'forecast-temp-low';
+        lowTemp.textContent = `${minTemp}°`;
+        
         const dateElement = document.createElement('div');
         dateElement.className = 'forecast-date';
         dateElement.textContent = formatDate(day);
         
-        const conditionElement = document.createElement('div');
-        conditionElement.className = 'forecast-condition';
-        conditionElement.textContent = getWeatherDescription(weatherCode);
+        contentContainer.appendChild(highTemp);
+        contentContainer.appendChild(lowTemp);
+        contentContainer.appendChild(dateElement);
         
-        const tempElement = document.createElement('div');
-        tempElement.className = 'forecast-temp';
-        const unit = temperatureUnit === 'celsius' ? 'C' : 'F';
-        tempElement.textContent = `${minTemp}°${unit} - ${maxTemp}°${unit}`;
-        
-        const precipElement = document.createElement('div');
-        precipElement.className = 'forecast-precip';
-        precipElement.textContent = `Precip: ${precipProb}%`;
-        
-        dayElement.appendChild(dateElement);
-        dayElement.appendChild(conditionElement);
-        dayElement.appendChild(tempElement);
-        dayElement.appendChild(precipElement);
+        dayElement.appendChild(precipIndicator);
+        dayElement.appendChild(contentContainer);
         
         forecastContainer.appendChild(dayElement);
     }
