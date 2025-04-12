@@ -22,7 +22,7 @@ async function getWeatherForecastData(lat, lng, tempUnit) {
     // Try to get cached weather data
     const weatherCache = await storage.get('forecast_cache');
     if (weatherCache && weatherCache.timestamp > Date.now() - CACHE_DURATION) {
-        // return weatherCache.data;
+        return weatherCache.data;
     }
 
     const unit = tempUnit === 'celsius' ? 'celsius' : 'fahrenheit';
