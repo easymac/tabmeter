@@ -22,7 +22,7 @@ async function getWeatherForecastData(lat, lng, tempUnit) {
     // Try to get cached weather data
     const weatherCache = await storage.get('forecast_cache');
     if (weatherCache && weatherCache.timestamp > Date.now() - CACHE_DURATION) {
-        return weatherCache.data;
+        // return weatherCache.data;
     }
 
     const unit = tempUnit === 'celsius' ? 'celsius' : 'fahrenheit';
@@ -103,9 +103,10 @@ function getWeatherDescription(code) {
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    // Return just the first letter of the weekday
-    return date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0);
+    const [year, month, day] = dateString.split('-');
+    return new Date(year, month - 1, day)
+        .toString()
+        .charAt(0);
 }
 
 function displayWeatherForecast(weatherData, temperatureUnit) {
