@@ -68,9 +68,6 @@ export function createLayoutManager(rootElement) {
         const gridItemContent = document.createElement('div');
         gridItemContent.className = 'grid-stack-item-content';
         
-        // Create and add alignment controls
-        const alignmentControls = createAlignmentControls();
-        gridItemContent.appendChild(alignmentControls);
         gridItemContent.appendChild(widget.container);
         gridItem.appendChild(gridItemContent);
         
@@ -85,59 +82,6 @@ export function createLayoutManager(rootElement) {
         grid.makeWidget(gridItem);
 
         return gridItem;
-    }
-
-    function createAlignmentControls() {
-        // Create alignment controls container
-        const alignmentControls = document.createElement('div');
-        alignmentControls.className = 'widget-alignment-controls';
-        
-        // Horizontal alignment controls
-        const horizontalControls = document.createElement('div');
-        horizontalControls.className = 'alignment-group horizontal';
-        
-        ['left', 'center', 'right'].forEach(align => {
-            const button = document.createElement('button');
-            button.className = `align-btn align-h-${align}`;
-            button.setAttribute('data-align', align);
-            button.innerHTML = `<img src="assets/icons/align-${align}.svg" alt="${align} align">`;
-            horizontalControls.appendChild(button);
-        });
-        
-        // Vertical alignment controls
-        const verticalControls = document.createElement('div');
-        verticalControls.className = 'alignment-group vertical';
-        
-        [
-            ['top', 'align-top'],
-            ['middle', 'align-middle'],
-            ['bottom', 'align-bottom']
-        ].forEach(([align]) => {
-            const button = document.createElement('button');
-            button.className = `align-btn align-v-${align}`;
-            button.setAttribute('data-align', align);
-            button.innerHTML = `<img src="assets/icons/align-${align}.svg" alt="${align} align">`;
-            verticalControls.appendChild(button);
-        });
-        
-        alignmentControls.appendChild(horizontalControls);
-        alignmentControls.appendChild(verticalControls);
-        
-        // Add event listeners for alignment buttons
-        alignmentControls.addEventListener('click', (e) => {
-            const button = e.target.closest('.align-btn');
-            if (!button) return;
-            
-            const group = button.closest('.alignment-group');
-            group.querySelectorAll('.align-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            button.classList.add('active');
-            
-            // TODO: Implement actual alignment logic
-        });
-
-        return alignmentControls;
     }
 
     async function saveGridLayout() {
