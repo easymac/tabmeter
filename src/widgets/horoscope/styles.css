@@ -1,6 +1,5 @@
 #horoscope-container {
     font-family: var(--font-family-base);
-    padding: var(--spacing-md);
     height: 100%;
     display: flex;
     flex-direction: column;
