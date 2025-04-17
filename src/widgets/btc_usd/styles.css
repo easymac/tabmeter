@@ -1,0 +1,12 @@
+#btc-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+#btc-price {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    text-align: center;
+} 

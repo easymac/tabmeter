@@ -12,6 +12,7 @@ const AVAILABLE_WIDGETS = {
     'horoscope': { name: 'Horoscope', config: {} },
     'lunar-phase': { name: 'Lunar Phase', config: {} },
     'weather-forecast': { name: 'Weather Forecast', config: {} },
+    'btc_usd': { name: 'BTC/USD', config: {} },
 };
 
 export function createLayoutManager(rootElement) {
