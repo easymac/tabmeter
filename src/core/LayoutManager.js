@@ -13,6 +13,7 @@ const AVAILABLE_WIDGETS = {
     'lunar-phase': { name: 'Lunar Phase', config: {} },
     'weather-forecast': { name: 'Weather Forecast', config: {} },
     'btc_usd': { name: 'BTC/USD', config: {} },
+    'sunrise-sunset': { name: 'Sunrise/Sunset', config: {} },
 };
 
 export function createLayoutManager(rootElement) {

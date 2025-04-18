@@ -1,0 +1,60 @@
+#settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-base);
+    padding: var(--spacing-base);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-small);
+}
+
+label {
+    font-size: var(--font-size-small);
+    color: var(--color-text);
+    font-family: var(--font-family-base);
+}
+
+input, select {
+    padding: var(--spacing-small);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
+    color: var(--color-text);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+}
+
+button {
+    padding: var(--spacing-small) var(--spacing-base);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
+    color: var(--color-text);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--color-hover);
+}
+
+#status-message {
+    font-size: var(--font-size-small);
+    font-family: var(--font-family-base);
+    padding: var(--spacing-small);
+    border-radius: var(--border-radius);
+}
+
+#status-message.success {
+    color: var(--color-text);
+    background-color: var(--color-success);
+}
+
+#status-message.error {
+    color: var(--color-text);
+    background-color: var(--color-error);
+} 
