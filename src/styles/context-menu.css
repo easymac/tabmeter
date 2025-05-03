@@ -1,12 +1,53 @@
-.context-menu {
+#context-menu-anchor {
     position: fixed;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+    visibility: hidden;
+    /* Define the anchor name */
+    anchor-name: --context-menu-anchor;
+}
+
+.context-menu {
+    position: absolute;
     background: var(--color-background);
     border: var(--border-width) solid var(--color-border);
     border-radius: var(--border-radius-sm);
     padding: var(--spacing-xs);
-    min-width: 150px;
+    min-width: 200px;
     box-shadow: var(--shadow-md);
-    z-index: 1000;
+    z-index: 1001;
+    display: none; /* Initially hidden */
+
+    /* Set the default anchor */
+    position-anchor: --context-menu-anchor;
+    top: anchor(bottom);
+    left: anchor(right);
+
+    /* Define fallback positions */
+    @position-try --bottom-right {
+        top: anchor(bottom);
+        left: anchor(right);
+    }
+    @position-try --top-right {
+        bottom: anchor(top); 
+        left: anchor(right);
+    }
+    @position-try --bottom-left {
+        top: anchor(bottom);
+        right: anchor(left);
+    }
+    @position-try --top-left {
+        bottom: anchor(top);
+        right: anchor(left);
+    }
+
+    /* Apply the fallback positions in order */
+    position-try-options:
+        --bottom-right,
+        --top-right,
+        --bottom-left,
+        --top-left;
 }
 
 .context-menu-item {
@@ -14,9 +55,57 @@
     cursor: pointer;
     color: var(--color-text);
     transition: background-color var(--transition-duration);
+    position: relative;
 }
 
 .context-menu-item:hover {
     background-color: var(--color-primary);
     color: white;
-} 
+}
+
+.context-menu-separator {
+    height: 1px;
+    background-color: var(--color-border);
+    margin: var(--spacing-xs) 0;
+}
+
+.context-menu-item.has-submenu {
+    position: relative; /* For submenu positioning */
+    padding-right: 24px;
+}
+
+.context-menu-item.has-submenu::after {
+    content: '▶';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.context-submenu {
+    position: absolute;
+    top: 0;
+    left: 100%; /* Position next to the parent item */
+    display: none;
+    background: var(--color-background);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-xs);
+    min-width: 200px;
+    box-shadow: var(--shadow-md);
+    z-index: 1001; /* Above main menu */
+}
+
+.context-menu-item.has-submenu:hover > .context-submenu,
+.context-menu-item.has-submenu:hover .context-submenu {
+    display: block;
+}
+
+.context-menu-item.danger {
+    color: var(--color-danger);
+}
+
+.context-menu-item.danger:hover {
+    background-color: var(--color-danger);
+    color: white;
+}

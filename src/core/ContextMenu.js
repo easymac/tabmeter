@@ -1,12 +1,27 @@
 export function createContextMenu() {
     const menuElement = createMenuElement();
+    const anchorElement = createAnchorElement();
+    document.body.appendChild(anchorElement);
     document.body.appendChild(menuElement);
     
     function createMenuElement() {
         const menu = document.createElement('div');
         menu.className = 'context-menu';
+        menu.id = 'context-menu';
         menu.style.display = 'none';
         return menu;
+    }
+
+    function createAnchorElement() {
+        const anchor = document.createElement('div');
+        anchor.id = 'context-menu-anchor';
+        anchor.style.position = 'fixed';
+        anchor.style.width = '1px';
+        anchor.style.height = '1px';
+        anchor.style.pointerEvents = 'none';
+        anchor.style.visibility = 'hidden';
+        anchor.style.anchorName = '--context-menu-anchor';
+        return anchor;
     }
 
     function show(x, y, items) {
@@ -55,30 +70,18 @@ export function createContextMenu() {
             menuElement.appendChild(menuItem);
         });
 
+        anchorElement.style.left = `${x}px`;
+        anchorElement.style.top = `${y}px`;
+
         menuElement.style.display = 'block';
-        menuElement.style.left = `${x}px`;
-        menuElement.style.top = `${y}px`;
-
-        // Ensure menu stays within viewport
-        const rect = menuElement.getBoundingClientRect();
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        if (rect.right > viewportWidth) {
-            menuElement.style.left = `${viewportWidth - rect.width}px`;
-        }
-        if (rect.bottom > viewportHeight) {
-            menuElement.style.top = `${viewportHeight - rect.height}px`;
-        }
     }
 
     function hide() {
         menuElement.style.display = 'none';
     }
 
-    // Add global click listener to hide menu when clicking outside
     document.addEventListener('click', (e) => {
-        if (!menuElement.contains(e.target)) {
+        if (!menuElement.contains(e.target) && e.target !== anchorElement) {
             hide();
         }
     });
