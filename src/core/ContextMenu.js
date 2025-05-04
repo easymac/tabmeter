@@ -19,8 +19,6 @@ export function createContextMenu() {
         anchor.style.width = '1px';
         anchor.style.height = '1px';
         anchor.style.pointerEvents = 'none';
-        anchor.style.visibility = 'hidden';
-        anchor.style.anchorName = '--context-menu-anchor';
         return anchor;
     }
 

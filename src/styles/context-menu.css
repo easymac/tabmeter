@@ -3,7 +3,7 @@
     width: 1px;
     height: 1px;
     pointer-events: none;
-    visibility: hidden;
+    /* visibility: hidden; */
     /* Define the anchor name */
     anchor-name: --context-menu-anchor;
 }
@@ -24,30 +24,38 @@
     top: anchor(bottom);
     left: anchor(right);
 
-    /* Define fallback positions */
-    @position-try --bottom-right {
-        top: anchor(bottom);
-        left: anchor(right);
-    }
-    @position-try --top-right {
-        bottom: anchor(top); 
-        left: anchor(right);
-    }
-    @position-try --bottom-left {
-        top: anchor(bottom);
-        right: anchor(left);
-    }
-    @position-try --top-left {
-        bottom: anchor(top);
-        right: anchor(left);
-    }
-
     /* Apply the fallback positions in order */
-    position-try-options:
+    position-try:
         --bottom-right,
         --top-right,
         --bottom-left,
         --top-left;
+}
+
+/* Define fallback positions */
+@position-try --bottom-right {
+    top: anchor(bottom);
+    left: anchor(right);
+    botttom: unset;
+    right: unset;
+}
+@position-try --top-right {
+    bottom: anchor(top); 
+    left: anchor(right);
+    top: unset;
+    right: unset;
+}
+@position-try --bottom-left {
+    top: anchor(bottom);
+    right: anchor(left);
+    bottom: unset;
+    left: unset;
+}
+@position-try --top-left {
+    bottom: anchor(top);
+    right: anchor(left);
+    top: unset;
+    left: unset;
 }
 
 .context-menu-item {
