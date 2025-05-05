@@ -44,6 +44,11 @@ export function createContextMenu() {
                 menuItem.classList.add('has-submenu');
                 const submenu = document.createElement('div');
                 submenu.className = 'context-submenu';
+
+                const submenuAnchor = document.createElement('div');
+                submenuAnchor.className = 'context-submenu-anchor';
+                submenuAnchor.style.anchorName = `--context-menu-item-anchor`;
+                menuItem.appendChild(submenuAnchor);
                 
                 item.submenu.forEach(subItem => {
                     const submenuItem = document.createElement('div');
