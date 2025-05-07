@@ -1,13 +1,25 @@
 export function createContextMenu() {
+    const contextMenuWrapper = createContextMenuWrapper();
     const menuElement = createMenuElement();
     const anchorElement = createAnchorElement();
-    document.body.appendChild(anchorElement);
-    document.body.appendChild(menuElement);
+    
+    // Append anchor and menu to the wrapper, then wrapper to body
+    contextMenuWrapper.appendChild(anchorElement);
+    contextMenuWrapper.appendChild(menuElement);
+    document.body.appendChild(contextMenuWrapper);
+
+    function createContextMenuWrapper() {
+        const wrapper = document.createElement('div');
+        wrapper.id = 'context-menu';
+        // This wrapper div will contain the anchor and all menus/submenus.
+        // It does not need specific styles itself for positioning, 
+        // as its children will be positioned.
+        return wrapper;
+    }
     
     function createMenuElement() {
         const menu = document.createElement('div');
         menu.className = 'context-menu';
-        menu.id = 'context-menu';
         menu.style.display = 'none';
         return menu;
     }
@@ -25,6 +37,10 @@ export function createContextMenu() {
     function show(x, y, items) {
         menuElement.innerHTML = '';
         
+        // Clear any existing submenus from the wrapper
+        const existingSubmenus = contextMenuWrapper.querySelectorAll('.context-submenu');
+        existingSubmenus.forEach(submenu => submenu.remove());
+
         items.forEach(item => {
             if (item.type === 'separator') {
                 const separator = document.createElement('div');
@@ -41,30 +57,31 @@ export function createContextMenu() {
             menuItem.textContent = item.label;
 
             if (item.submenu) {
+                const uniqueAnchorId = `submenu-anchor-${Math.random().toString(36).substring(2, 9)}`;
+                menuItem.style.anchorName = `--${uniqueAnchorId}`;
                 menuItem.classList.add('has-submenu');
-                const submenu = document.createElement('div');
-                submenu.className = 'context-submenu';
-
-                const submenuAnchor = document.createElement('div');
-                submenuAnchor.className = 'context-submenu-anchor';
-                submenuAnchor.style.anchorName = `--context-menu-item-anchor`;
-                menuItem.appendChild(submenuAnchor);
                 
-                item.submenu.forEach(subItem => {
-                    const submenuItem = document.createElement('div');
-                    submenuItem.className = 'context-menu-item';
-                    submenuItem.textContent = subItem.label;
-                    submenuItem.onclick = (e) => {
-                        e.stopPropagation();
-                        subItem.action();
-                        hide();
-                    };
-                    submenu.appendChild(submenuItem);
+                const submenuElement = createSubMenuElement(item.submenu, uniqueAnchorId);
+                contextMenuWrapper.appendChild(submenuElement);
+
+                // Show/hide submenu on hover
+                menuItem.addEventListener('mouseenter', () => {
+                    submenuElement.style.display = 'block';
+                });
+                menuItem.addEventListener('mouseleave', (e) => {
+                    if (!submenuElement.contains(e.relatedTarget)) {
+                        submenuElement.style.display = 'none';
+                    }
+                });
+                submenuElement.addEventListener('mouseleave', (e) => {
+                    if (!menuItem.contains(e.relatedTarget)) {
+                        submenuElement.style.display = 'none';
+                    }
                 });
 
-                menuItem.appendChild(submenu);
             } else {
-                menuItem.onclick = () => {
+                menuItem.onclick = (e) => {
+                    e.stopPropagation();
                     item.action();
                     hide();
                 };
@@ -81,13 +98,40 @@ export function createContextMenu() {
 
     function hide() {
         menuElement.style.display = 'none';
+        // Also hide all submenus
+        const existingSubmenus = contextMenuWrapper.querySelectorAll('.context-submenu');
+        existingSubmenus.forEach(submenu => submenu.style.display = 'none');
     }
 
     document.addEventListener('click', (e) => {
-        if (!menuElement.contains(e.target) && e.target !== anchorElement) {
+        if (!contextMenuWrapper.contains(e.target) && e.target !== anchorElement) {
             hide();
         }
     });
+
+    // Helper function to create a submenu element
+    function createSubMenuElement(submenuItems, anchorId) {
+        const submenu = document.createElement('div');
+        submenu.className = 'context-submenu';
+        submenu.style.positionAnchor = `--${anchorId}`;
+        submenu.style.display = 'none';
+
+        submenuItems.forEach(subItem => {
+            const submenuItemElement = document.createElement('div');
+            submenuItemElement.className = 'context-menu-item';
+            if (subItem.className) {
+                submenuItemElement.classList.add(subItem.className);
+            }
+            submenuItemElement.textContent = subItem.label;
+            submenuItemElement.onclick = (e) => {
+                e.stopPropagation();
+                subItem.action();
+                hide();
+            };
+            submenu.appendChild(submenuItemElement);
+        });
+        return submenu;
+    }
 
     return {
         show,
