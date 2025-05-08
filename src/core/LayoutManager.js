@@ -151,22 +151,37 @@ export function createLayoutManager(rootElement) {
     }
 
     function showWidgetContextMenu(x, y, widgetId) {
-        contextMenu.show(x, y, [
-            {
-                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
-                action: () => toggleEditing()
-            },
+        const menuItems = [
             {
                 label: 'Widget Settings',
                 action: () => openWidgetSettings(widgetId)
             },
             { type: 'separator' },
             {
+                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
+                action: () => toggleEditing()
+            },
+            { type: 'separator' },
+            {
+                label: 'Add Widget',
+                submenu: Object.entries(AVAILABLE_WIDGETS).map(([id, widget]) => ({
+                    label: widget.name,
+                    action: () => {
+                        window.postMessage({
+                            type: 'ADD_WIDGET',
+                            widgetId: id,
+                            config: widget.config
+                        }, '*');
+                    }
+                }))
+            },
+            {
                 label: 'Remove Widget',
                 action: () => removeWidget(widgetId),
                 className: 'danger'
             }
-        ]);
+        ];
+        contextMenu.show(x, y, menuItems);
     }
 
     function showGlobalContextMenu(x, y) {
