@@ -1,0 +1,19 @@
+{
+    "version": 1.1,
+    "atDirectives": [
+      {
+        "name": "@position-try",
+        "description": "Defines a fallback position for an element using CSS Anchor Positioning. See: https://developer.mozilla.org/en-US/docs/Web/CSS/@position-try",
+        "references": [
+          {
+            "name": "MDN Web Docs: @position-try",
+            "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@position-try"
+          },
+          {
+            "name": "CSS Anchor Positioning Spec",
+            "url": "https://drafts.csswg.org/css-anchor-position-1/#at-ruledef-position-try"
+          }
+        ]
+      }
+    ]
+  }
