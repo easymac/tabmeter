@@ -80,6 +80,38 @@ export function createLayoutManager(rootElement) {
         removeButton.onclick = () => removeWidget(widget.id);
         gridItem.appendChild(removeButton);
         
+        // Attach click listener to iframe after it loads
+        const iframe = widget.container.querySelector('iframe');
+        if (iframe) {
+            iframe.addEventListener('load', () => {
+                try {
+                    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                    if (iframeDocument) {
+                        iframeDocument.addEventListener('click', (iframeEvent) => {
+                            // Calculate coordinates relative to the parent document
+                            const iframeRect = iframe.getBoundingClientRect();
+                            const parentClientX = iframeRect.left + iframeEvent.clientX;
+                            const parentClientY = iframeRect.top + iframeEvent.clientY;
+
+                            // Create and dispatch a new click event in the parent document
+                            const parentClickEvent = new MouseEvent('click', {
+                                bubbles: true,
+                                cancelable: true,
+                                clientX: parentClientX,
+                                clientY: parentClientY,
+                                view: window
+                            });
+                            document.dispatchEvent(parentClickEvent);
+                        });
+                    }
+                } catch (error) {
+                    // Log error if accessing iframe content fails (e.g., cross-origin)
+                    // In this application, iframes are same-origin, but good practice.
+                    console.warn('Error attaching click listener to iframe:', error);
+                }
+            });
+        }
+        
         await restoreWidgetPosition(widget.id, gridItem);
         grid.makeWidget(gridItem);
 
