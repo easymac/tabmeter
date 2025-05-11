@@ -3,8 +3,6 @@
     width: 1px;
     height: 1px;
     pointer-events: none;
-    /* visibility: hidden; */
-    /* Define the anchor name */
     anchor-name: --context-menu-anchor;
 }
 
@@ -13,18 +11,13 @@
     background: var(--color-background);
     border: var(--border-width) solid var(--color-border);
     border-radius: var(--border-radius-sm);
-    padding: var(--spacing-xs);
     min-width: 200px;
     box-shadow: var(--shadow-md);
     z-index: 1001;
     display: none; /* Initially hidden */
-
-    /* Set the default anchor */
     position-anchor: --context-menu-anchor;
     top: anchor(bottom);
     left: anchor(right);
-
-    /* Apply the fallback positions in order */
     position-try:
         --bottom-right,
         --top-right,
@@ -59,36 +52,67 @@
 }
 
 .context-menu-item {
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: calc(var(--spacing-xs) * 2);
     cursor: pointer;
     color: var(--color-text);
     transition: background-color var(--transition-duration);
     position: relative;
-    /* anchor-name: --context-menu-item-anchor; */ /* Removed: Handled dynamically in JS */
-}
-
-.context-menu-item:hover {
-    background-color: var(--color-primary);
-    color: white;
+    
+    &:hover {
+        color: white;
+    }
+    
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        inset: 3px;
+        background-color: var(--color-primary);
+        z-index: -1;
+        color: white;
+        border-radius: 0.15rem;
+        opacity: 0;
+        transition: opacity var(--transition-duration);
+    }
+    
+    &:hover::before {
+        opacity: 1;
+    }
+    
+    &.has-submenu {
+        position: relative;
+        padding-right: 24px;
+        
+        &::after {
+            content: '\279D';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        &:hover > .context-submenu,
+        &:hover .context-submenu {
+            display: block;
+        }
+    }
+    
+    &.danger {
+        color: var(--color-danger);
+        
+        &:hover {
+            color: white;
+        }
+        
+        &:hover::before {
+            background-color: var(--color-danger);
+        }
+    }
 }
 
 .context-menu-separator {
     height: 1px;
     background-color: var(--color-border);
-    margin: var(--spacing-xs) 0;
-}
-
-.context-menu-item.has-submenu {
-    position: relative; /* For submenu positioning */
-    padding-right: 24px;
-}
-
-.context-menu-item.has-submenu::after {
-    content: '▶';
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .context-submenu {
@@ -97,17 +121,9 @@
     background: var(--color-background);
     border: var(--border-width) solid var(--color-border);
     border-radius: var(--border-radius-sm);
-    padding: var(--spacing-xs);
     min-width: 200px;
     box-shadow: var(--shadow-md);
     z-index: 1001; /* Above main menu */
-
-    /* Set the default anchor */
-    /* position-anchor: --context-menu-item-anchor; */ /* Removed: Handled dynamically in JS */
-    /* top: anchor(bottom);
-    left: anchor(right); */
-    
-    /* Apply the fallback positions in order */
     position-try:
         --sub-bottom-right,
         --sub-top-right,
@@ -139,18 +155,4 @@
     right: anchor(left);
     top: unset;
     left: unset;
-}
-
-.context-menu-item.has-submenu:hover > .context-submenu,
-.context-menu-item.has-submenu:hover .context-submenu {
-    display: block;
-}
-
-.context-menu-item.danger {
-    color: var(--color-danger);
-}
-
-.context-menu-item.danger:hover {
-    background-color: var(--color-danger);
-    color: white;
 }
