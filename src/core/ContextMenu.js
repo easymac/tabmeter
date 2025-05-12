@@ -54,6 +54,9 @@ export function createContextMenu() {
             if (item.className) {
                 menuItem.classList.add(item.className);
             }
+            if (item.icon) {
+                menuItem.setAttribute('data-icon', item.icon);
+            }
             menuItem.textContent = item.label;
 
             if (item.submenu) {

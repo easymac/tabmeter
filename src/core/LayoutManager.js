@@ -185,16 +185,6 @@ export function createLayoutManager(rootElement) {
     function showWidgetContextMenu(x, y, widgetId) {
         const menuItems = [
             {
-                label: 'Widget Settings',
-                action: () => openWidgetSettings(widgetId)
-            },
-            { type: 'separator' },
-            {
-                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
-                action: () => toggleEditing()
-            },
-            { type: 'separator' },
-            {
                 label: 'Add Widget',
                 submenu: Object.entries(AVAILABLE_WIDGETS).map(([id, widget]) => ({
                     label: widget.name,
@@ -206,6 +196,18 @@ export function createLayoutManager(rootElement) {
                         }, '*');
                     }
                 }))
+            },
+            { type: 'separator' },
+            {
+                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
+                action: () => toggleEditing(),
+                icon: '\u270B'
+            },
+            { type: 'separator' },
+            {
+                label: 'Widget Settings',
+                action: () => openWidgetSettings(widgetId),
+                icon: '\u2699'
             },
             {
                 label: 'Remove Widget',
@@ -219,11 +221,6 @@ export function createLayoutManager(rootElement) {
     function showGlobalContextMenu(x, y) {
         const menuItems = [
             {
-                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
-                action: () => toggleEditing()
-            },
-            { type: 'separator' },
-            {
                 label: 'Add Widget',
                 submenu: Object.entries(AVAILABLE_WIDGETS).map(([id, widget]) => ({
                     label: widget.name,
@@ -235,6 +232,12 @@ export function createLayoutManager(rootElement) {
                         }, '*');
                     }
                 }))
+            },
+            { type: 'separator' },
+            {
+                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
+                action: () => toggleEditing(),
+                icon: '\u270B'
             }
         ];
 

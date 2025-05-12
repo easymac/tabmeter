@@ -110,6 +110,18 @@
             background-color: var(--color-danger);
         }
     }
+
+    &[data-icon] {
+        padding-right: 24px;
+        
+        &::after {
+            content: attr(data-icon);
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
 }
 
 .context-menu-separator {
