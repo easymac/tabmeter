@@ -18,6 +18,8 @@
     position-anchor: --context-menu-anchor;
     top: anchor(bottom);
     left: anchor(right);
+    padding-top: 3px;
+    padding-bottom: 3px;
     position-try:
         --bottom-right,
         --top-right,
@@ -66,7 +68,7 @@
         content: '';
         display: block;
         position: absolute;
-        inset: 3px;
+        inset: 0 3px;
         background-color: var(--color-primary);
         z-index: -1;
         color: white;
@@ -113,6 +115,7 @@
 .context-menu-separator {
     height: 1px;
     background-color: var(--color-border);
+    margin: 3px 0;
 }
 
 .context-submenu {
@@ -124,6 +127,7 @@
     min-width: 200px;
     box-shadow: var(--shadow-md);
     z-index: 1001; /* Above main menu */
+    padding: 3px 0;
     position-try:
         --sub-bottom-right,
         --sub-top-right,
@@ -133,25 +137,25 @@
 
 /* Define fallback positions */
 @position-try --sub-bottom-right {
-    top: anchor(top);
+    top: calc(anchor(top) - 4px);
     left: anchor(right);
     bottom: unset;
     right: unset;
 }
 @position-try --sub-top-right {
-    bottom: anchor(bottom); 
+    bottom: calc(anchor(bottom) - 4px); 
     left: anchor(right);
     top: unset;
     right: unset;
 }
 @position-try --sub-bottom-left {
-    top: anchor(top);
+    top: calc(anchor(top) - 4px);
     right: anchor(left);
     bottom: unset;
     left: unset;
 }
 @position-try --sub-top-left {
-    bottom: anchor(bottom);
+    bottom: calc(anchor(bottom) - 4px);
     right: anchor(left);
     top: unset;
     left: unset;
