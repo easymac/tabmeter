@@ -397,7 +397,8 @@ export function createLayoutManager(rootElement) {
 
     // Add to document click handler
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.widget-selector') && 
+        if (!e.target.closest ||
+            !e.target.closest('.widget-selector') && 
             !e.target.closest('.add-widget-button')) {
             hideWidgetSelector();
         }
