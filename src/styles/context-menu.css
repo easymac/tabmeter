@@ -59,6 +59,9 @@
     color: var(--color-text);
     transition: background-color var(--transition-duration);
     position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     
     &:hover {
         color: white;
@@ -83,15 +86,6 @@
     
     &.has-submenu {
         position: relative;
-        padding-right: 24px;
-        
-        &::after {
-            content: '\279D';
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
         
         &:hover > .context-submenu,
         &:hover .context-submenu {
@@ -111,6 +105,12 @@
         }
     }
 
+    iconify-icon {
+        transform: scale(1.2);
+    }
+}
+
+/*
     &[data-icon] {
         padding-right: 24px;
         
@@ -122,7 +122,7 @@
             transform: translateY(-50%);
         }
     }
-}
+*/
 
 .context-menu-separator {
     height: 1px;

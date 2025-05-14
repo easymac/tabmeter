@@ -186,6 +186,7 @@ export function createLayoutManager(rootElement) {
         const menuItems = [
             {
                 label: 'Add Widget',
+                icon: 'mynaui:chevron-right',
                 submenu: Object.entries(AVAILABLE_WIDGETS).map(([id, widget]) => ({
                     label: widget.name,
                     action: () => {
@@ -201,17 +202,18 @@ export function createLayoutManager(rootElement) {
             {
                 label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
                 action: () => toggleEditing(),
-                icon: '\u270B'
+                icon: 'mynaui:grid'
             },
             { type: 'separator' },
             {
                 label: 'Widget Settings',
                 action: () => openWidgetSettings(widgetId),
-                icon: '\u2699'
+                icon: 'mynaui:cog-four'
             },
             {
                 label: 'Remove Widget',
                 action: () => removeWidget(widgetId),
+                icon: 'mynaui:trash-one',
                 className: 'danger'
             }
         ];
@@ -222,6 +224,7 @@ export function createLayoutManager(rootElement) {
         const menuItems = [
             {
                 label: 'Add Widget',
+                icon: 'mynaui:chevron-right',
                 submenu: Object.entries(AVAILABLE_WIDGETS).map(([id, widget]) => ({
                     label: widget.name,
                     action: () => {
@@ -237,7 +240,7 @@ export function createLayoutManager(rootElement) {
             {
                 label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
                 action: () => toggleEditing(),
-                icon: '\u270B'
+                icon: 'mynaui:grid'
             }
         ];
 

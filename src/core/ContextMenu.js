@@ -54,10 +54,20 @@ export function createContextMenu() {
             if (item.className) {
                 menuItem.classList.add(item.className);
             }
+
+            // Create and append label element first
+            const labelElement = document.createElement('span');
+            // It's good practice to add a class for styling, though not explicitly requested
+            // labelElement.className = 'context-menu-item-label'; 
+            labelElement.textContent = item.label;
+            menuItem.appendChild(labelElement);
+
             if (item.icon) {
-                menuItem.setAttribute('data-icon', item.icon);
+                const iconElement = document.createElement('iconify-icon');
+                iconElement.setAttribute('icon', item.icon);
+                iconElement.setAttribute('noobserver', '');
+                menuItem.appendChild(iconElement); // Appends after the labelElement
             }
-            menuItem.textContent = item.label;
 
             if (item.submenu) {
                 const uniqueAnchorId = `submenu-anchor-${Math.random().toString(36).substring(2, 9)}`;
