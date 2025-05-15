@@ -185,6 +185,12 @@ export function createLayoutManager(rootElement) {
     function showWidgetContextMenu(x, y, widgetId) {
         const menuItems = [
             {
+                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
+                action: () => toggleEditing(),
+                icon: 'mynaui:grid'
+            },
+            { type: 'separator' },
+            {
                 label: 'Add Widget',
                 icon: 'mynaui:chevron-right',
                 submenu: Object.entries(AVAILABLE_WIDGETS).map(([id, widget]) => ({
@@ -197,12 +203,6 @@ export function createLayoutManager(rootElement) {
                         }, '*');
                     }
                 }))
-            },
-            { type: 'separator' },
-            {
-                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
-                action: () => toggleEditing(),
-                icon: 'mynaui:grid'
             },
             { type: 'separator' },
             {
@@ -223,6 +223,12 @@ export function createLayoutManager(rootElement) {
     function showGlobalContextMenu(x, y) {
         const menuItems = [
             {
+                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
+                action: () => toggleEditing(),
+                icon: 'mynaui:grid'
+            },
+            { type: 'separator' },
+            {
                 label: 'Add Widget',
                 icon: 'mynaui:chevron-right',
                 submenu: Object.entries(AVAILABLE_WIDGETS).map(([id, widget]) => ({
@@ -235,12 +241,6 @@ export function createLayoutManager(rootElement) {
                         }, '*');
                     }
                 }))
-            },
-            { type: 'separator' },
-            {
-                label: `${isDraggable ? 'Disable' : 'Enable'} Editing`,
-                action: () => toggleEditing(),
-                icon: 'mynaui:grid'
             }
         ];
 
