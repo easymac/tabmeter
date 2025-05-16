@@ -1,19 +1,19 @@
 import { createContextMenu } from './ContextMenu.js';
 
 const AVAILABLE_WIDGETS = {
-    clock: { name: 'Clock', config: { timezone: 'UTC' } },
-    date: { name: 'Date', config: {} },
-    countdown: { name: 'Countdown', config: {} },
-    'us-weather': { name: 'Weather', config: {} },
-    links: { name: 'Links', config: {} },
-    countdowns: { name: 'Countdowns', config: {} },
-    'photo-gallery': { name: 'Photo Gallery', config: {} },
-    'github-heatmap': { name: 'Github Heatmap', config: {} },
-    'horoscope': { name: 'Horoscope', config: {} },
-    'lunar-phase': { name: 'Lunar Phase', config: {} },
-    'weather-forecast': { name: 'Weather Forecast', config: {} },
-    'btc_usd': { name: 'BTC/USD', config: {} },
-    'sunrise-sunset': { name: 'Sunrise/Sunset', config: {} },
+    clock: { name: 'Clock', config: { timezone: 'UTC' }, hasSettings: false },
+    date: { name: 'Date', config: {}, hasSettings: false },
+    countdown: { name: 'Countdown', config: {}, hasSettings: false },
+    'us-weather': { name: 'Weather', config: {}, hasSettings: true },
+    links: { name: 'Links', config: {}, hasSettings: true },
+    countdowns: { name: 'Countdowns', config: {}, hasSettings: true },
+    'photo-gallery': { name: 'Photo Gallery', config: {}, hasSettings: false },
+    'github-heatmap': { name: 'Github Heatmap', config: {}, hasSettings: true },
+    'horoscope': { name: 'Horoscope', config: {}, hasSettings: true },
+    'lunar-phase': { name: 'Lunar Phase', config: {}, hasSettings: true },
+    'weather-forecast': { name: 'Weather Forecast', config: {}, hasSettings: true },
+    'btc_usd': { name: 'BTC/USD', config: {}, hasSettings: false },
+    'sunrise-sunset': { name: 'Sunrise/Sunset', config: {}, hasSettings: true },
 };
 
 export function createLayoutManager(rootElement) {
@@ -204,19 +204,26 @@ export function createLayoutManager(rootElement) {
                     }
                 }))
             },
-            { type: 'separator' },
-            {
+            { type: 'separator' }
+        ];
+
+        // Conditionally add Widget Settings
+        const widgetInfo = AVAILABLE_WIDGETS[widgetId];
+        if (widgetInfo && widgetInfo.hasSettings) {
+            menuItems.push({
                 label: 'Widget Settings',
                 action: () => openWidgetSettings(widgetId),
                 icon: 'mynaui:cog-four'
-            },
-            {
-                label: 'Remove Widget',
-                action: () => removeWidget(widgetId),
-                icon: 'mynaui:trash-one',
-                className: 'danger'
-            }
-        ];
+            });
+        }
+
+        menuItems.push({
+            label: 'Remove Widget',
+            action: () => removeWidget(widgetId),
+            icon: 'mynaui:trash-one',
+            className: 'danger'
+        });
+        
         contextMenu.show(x, y, menuItems);
     }
 
