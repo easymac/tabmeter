@@ -1,5 +1,5 @@
 .editing-enabled {
-    border: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-primary);
 }
 
 .editing-enabled iframe {
@@ -7,8 +7,7 @@
 }
 
 .editing-enabled .grid-stack-item-content {
-    border: 2px solid var(--color-primary);
-
+    outline: 2px solid var(--color-primary);
 }
 
 .widget-alignment-controls {
@@ -25,7 +24,7 @@
 }
 
 .settings-mode {
-    border: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-primary);
 }
 
 .settings-done-button {
@@ -106,5 +105,11 @@
 .widget-selector-item:hover {
     background-color: var(--color-primary);
     color: white;
+}
+
+.widget-context-active {
+    outline: 2px solid var(--color-primary);
+    /* Ensure it is visible above other elements if necessary, though outlines usually don't cause stacking issues */
+    z-index: 999; /* Lower than context menu (1001) and buttons (1000) but potentially above widget content */
 }
 

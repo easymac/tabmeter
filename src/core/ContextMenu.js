@@ -2,6 +2,7 @@ export function createContextMenu() {
     const contextMenuWrapper = createContextMenuWrapper();
     const menuElement = createMenuElement();
     const anchorElement = createAnchorElement();
+    let currentOnHideCallback = null;
     
     // Append anchor and menu to the wrapper, then wrapper to body
     contextMenuWrapper.appendChild(anchorElement);
@@ -34,8 +35,9 @@ export function createContextMenu() {
         return anchor;
     }
 
-    function show(x, y, items) {
+    function show(x, y, items, onHideCallback) {
         menuElement.innerHTML = '';
+        currentOnHideCallback = onHideCallback || null;
         
         // Clear any existing submenus from the wrapper
         const existingSubmenus = contextMenuWrapper.querySelectorAll('.context-submenu');
@@ -114,6 +116,11 @@ export function createContextMenu() {
         // Also hide all submenus
         const existingSubmenus = contextMenuWrapper.querySelectorAll('.context-submenu');
         existingSubmenus.forEach(submenu => submenu.style.display = 'none');
+
+        if (currentOnHideCallback) {
+            currentOnHideCallback();
+            currentOnHideCallback = null;
+        }
     }
 
     document.addEventListener('click', (e) => {

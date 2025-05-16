@@ -22,6 +22,7 @@ export function createLayoutManager(rootElement) {
     let isResizable = false;
     let currentSettingsWidget = null;
     let widgetSelector = null;
+    let currentContextMenuWidgetElement = null;
     
     // Initialize GridStack
     const grid = GridStack.init({
@@ -223,8 +224,25 @@ export function createLayoutManager(rootElement) {
             icon: 'mynaui:trash-one',
             className: 'danger'
         });
+
+        // Clear previous active context menu widget state
+        if (currentContextMenuWidgetElement) {
+            currentContextMenuWidgetElement.classList.remove('widget-context-active');
+            currentContextMenuWidgetElement = null;
+        }
+
+        const gridItem = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (gridItem) {
+            gridItem.classList.add('widget-context-active');
+            currentContextMenuWidgetElement = gridItem;
+        }
         
-        contextMenu.show(x, y, menuItems);
+        contextMenu.show(x, y, menuItems, () => {
+            if (currentContextMenuWidgetElement) {
+                currentContextMenuWidgetElement.classList.remove('widget-context-active');
+                currentContextMenuWidgetElement = null;
+            }
+        });
     }
 
     function showGlobalContextMenu(x, y) {
@@ -251,7 +269,19 @@ export function createLayoutManager(rootElement) {
             }
         ];
 
-        contextMenu.show(x, y, menuItems);
+        // Clear active context menu widget state if any
+        if (currentContextMenuWidgetElement) {
+            currentContextMenuWidgetElement.classList.remove('widget-context-active');
+            currentContextMenuWidgetElement = null;
+        }
+
+        contextMenu.show(x, y, menuItems, () => {
+            // Ensure it's cleared if for some reason it was set by another flow
+            if (currentContextMenuWidgetElement) {
+                currentContextMenuWidgetElement.classList.remove('widget-context-active');
+                currentContextMenuWidgetElement = null;
+            }
+        });
     }
 
     function toggleEditing() {
