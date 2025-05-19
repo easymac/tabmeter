@@ -24,10 +24,13 @@ export function createLayoutManager(rootElement) {
     let widgetSelector = null;
     let currentContextMenuWidgetElement = null;
     
+    // Calculate initial cell height
+    let currentCellHeight = Math.round(window.innerHeight / 12);
+
     // Initialize GridStack
     const grid = GridStack.init({
         column: 24,
-        cellHeight: 104,
+        cellHeight: currentCellHeight,
         margin: 0,
         animate: true,
         draggable: {
@@ -446,6 +449,15 @@ export function createLayoutManager(rootElement) {
 
     // Add to initial setup
     createAddWidgetButton();
+
+    // Handle window resize to adjust cell height
+    window.addEventListener('resize', () => {
+        const newCellHeight = Math.round(window.innerHeight / 12);
+        if (newCellHeight !== currentCellHeight) {
+            currentCellHeight = newCellHeight;
+            grid.cellHeight(currentCellHeight, true); // true to update existing items
+        }
+    });
 
     return {
         addWidget,
