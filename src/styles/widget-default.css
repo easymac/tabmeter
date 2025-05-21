@@ -80,3 +80,37 @@ input:focus {
   border-color: var(--color-primary);
 }
 
+/* Alignment */
+body {
+  display: flex;
+  flex-direction: column;
+
+  &.align-top-left {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  &.align-top {
+    align-items: flex-start;
+  }
+
+  &.align-middle {
+    align-items: center;
+  }
+
+  &.align-bottom {
+    align-items: flex-end;
+  }
+
+  &.align-left {
+    justify-content: flex-start;
+  }
+
+  &.align-center {
+    justify-content: center;
+  }
+
+  &.align-right {
+    justify-content: flex-end;
+  }
+}

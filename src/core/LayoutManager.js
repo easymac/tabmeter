@@ -16,6 +16,10 @@ const AVAILABLE_WIDGETS = {
     'sunrise-sunset': { name: 'Sunrise/Sunset', config: {}, hasSettings: true },
 };
 
+const V_ALIGNS = ['top', 'middle', 'bottom'];
+const H_ALIGNS = ['left', 'center', 'right'];
+const ALIGNMENT_STORAGE_KEY = 'widgetAlignments';
+
 export function createLayoutManager(rootElement) {
     const widgetsRoot = rootElement;
     let isDraggable = false;
@@ -118,6 +122,17 @@ export function createLayoutManager(rootElement) {
         
         await restoreWidgetPosition(widget.id, gridItem);
         grid.makeWidget(gridItem);
+
+        // Restore alignment
+        const alignment = await loadWidgetAlignment(widget.id);
+        if (alignment) {
+            applyAlignmentToWidget(widget.id, alignment.vertical, alignment.horizontal, gridItem);
+        }
+        
+        // If editing is already enabled, show controls for this new widget
+        if (isDraggable) { // isDraggable indicates editing mode
+             createAlignmentControlsForWidget(gridItem, widget.id);
+        }
 
         return gridItem;
     }
@@ -292,6 +307,12 @@ export function createLayoutManager(rootElement) {
         toggleDragging(enable);
         toggleResizing(enable);
         widgetsRoot.classList.toggle('editing-enabled', enable);
+
+        if (enable) {
+            showAlignmentControlsForAllWidgets();
+        } else {
+            hideAlignmentControlsForAllWidgets();
+        }
     }
 
     function openWidgetSettings(widgetId) {
@@ -359,7 +380,7 @@ export function createLayoutManager(rootElement) {
         // Remove from grid
         grid.removeWidget(gridItem);
 
-        // Clean up storage
+        // Clean up storage for widget data
         const keys = await chrome.storage.local.get(null);
         const widgetPrefix = `widget_${widgetId}_`;
         const keysToRemove = Object.keys(keys).filter(key => key.startsWith(widgetPrefix));
@@ -369,10 +390,17 @@ export function createLayoutManager(rootElement) {
         }
 
         // Remove from layout
-        const layout = await chrome.storage.local.get('widgetLayout');
-        if (layout.widgetLayout) {
-            delete layout.widgetLayout[widgetId];
-            await chrome.storage.local.set({ widgetLayout: layout.widgetLayout });
+        let layoutResult = await chrome.storage.local.get('widgetLayout');
+        if (layoutResult.widgetLayout && layoutResult.widgetLayout[widgetId]) {
+            delete layoutResult.widgetLayout[widgetId];
+            await chrome.storage.local.set({ widgetLayout: layoutResult.widgetLayout });
+        }
+
+        // Remove alignment settings
+        const alignResult = await chrome.storage.local.get(ALIGNMENT_STORAGE_KEY);
+        if (alignResult[ALIGNMENT_STORAGE_KEY] && alignResult[ALIGNMENT_STORAGE_KEY][widgetId]) {
+            delete alignResult[ALIGNMENT_STORAGE_KEY][widgetId];
+            await chrome.storage.local.set({ [ALIGNMENT_STORAGE_KEY]: alignResult[ALIGNMENT_STORAGE_KEY] });
         }
 
         // Remove from active widgets list
@@ -458,6 +486,137 @@ export function createLayoutManager(rootElement) {
             grid.cellHeight(currentCellHeight, true); // true to update existing items
         }
     });
+
+    async function saveWidgetAlignment(widgetId, vAlign, hAlign) {
+        try {
+            const result = await chrome.storage.local.get(ALIGNMENT_STORAGE_KEY);
+            const alignments = result[ALIGNMENT_STORAGE_KEY] || {};
+            alignments[widgetId] = { vertical: vAlign, horizontal: hAlign };
+            await chrome.storage.local.set({ [ALIGNMENT_STORAGE_KEY]: alignments });
+        } catch (error) {
+            console.warn('Failed to save widget alignment:', error);
+        }
+    }
+
+    async function loadWidgetAlignment(widgetId) {
+        try {
+            const result = await chrome.storage.local.get(ALIGNMENT_STORAGE_KEY);
+            const alignments = result[ALIGNMENT_STORAGE_KEY] || {};
+            return alignments[widgetId] || null;
+        } catch (error) {
+            console.warn('Failed to load widget alignment:', error);
+            return null;
+        }
+    }
+
+    function applyAlignmentToWidget(widgetId, vAlign, hAlign, widgetEl) {
+        const iframe = widgetEl.querySelector('iframe');
+        if (iframe && iframe.contentDocument && iframe.contentDocument.body) {
+            const body = iframe.contentDocument.body;
+            // Remove existing align-v-* and align-h-* classes (or the old combined ones)
+            body.className = body.className.replace(/\balign-(top|middle|bottom|left|center|right)\b/g, '').trim();
+            body.className = body.className.replace(/\balign-[^-]+-[^-]+\b/g, '').trim(); // Remove old format like align-top-left
+            
+            body.classList.add(`align-${vAlign}`);
+            body.classList.add(`align-${hAlign}`);
+        } else {
+            // console.warn(`Could not apply alignment to widget ${widgetId}: iframe or body not accessible.`);
+            // It might be that the iframe is not loaded yet. Try again in a bit.
+            setTimeout(() => {
+                const freshIframe = widgetEl.querySelector('iframe');
+                if (freshIframe && freshIframe.contentDocument && freshIframe.contentDocument.body) {
+                    const freshBody = freshIframe.contentDocument.body;
+                    freshBody.className = freshBody.className.replace(/\balign-(top|middle|bottom|left|center|right)\b/g, '').trim();
+                    freshBody.className = freshBody.className.replace(/\balign-[^-]+-[^-]+\b/g, '').trim();
+                    freshBody.classList.add(`align-${vAlign}`);
+                    freshBody.classList.add(`align-${hAlign}`);
+                } else {
+                    console.warn(`Still could not apply alignment to widget ${widgetId} after delay.`);
+                }
+            }, 500); // Wait for iframe to potentially load
+        }
+
+        // Update visual state of controls if they exist for this widget
+        const controlsContainer = widgetEl.querySelector('.alignment-controls-container');
+        if (controlsContainer) {
+            const cells = controlsContainer.querySelectorAll('.alignment-cell');
+            cells.forEach(cell => {
+                cell.classList.remove('selected');
+                if (cell.dataset.v === vAlign && cell.dataset.h === hAlign) {
+                    cell.classList.add('selected');
+                }
+            });
+        }
+    }
+
+    function createAlignmentControlsForWidget(widgetEl, widgetId) {
+        let controlsContainer = widgetEl.querySelector('.alignment-controls-container');
+        if (controlsContainer) {
+            controlsContainer.style.display = 'grid'; // Ensure visible
+            return; // Already exists
+        }
+
+        controlsContainer = document.createElement('div');
+        controlsContainer.className = 'alignment-controls-container';
+
+        V_ALIGNS.forEach(v => {
+            H_ALIGNS.forEach(h => {
+                const cell = document.createElement('div');
+                cell.className = 'alignment-cell';
+                cell.dataset.v = v;
+                cell.dataset.h = h;
+                cell.setAttribute('role', 'button');
+                cell.setAttribute('tabindex', '0');
+                cell.setAttribute('aria-label', `Align ${v} ${h}`);
+                cell.onclick = async () => {
+                    applyAlignmentToWidget(widgetId, v, h, widgetEl);
+                    await saveWidgetAlignment(widgetId, v, h);
+                };
+                cell.onkeydown = (e) => { // Basic keyboard accessibility
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        cell.click();
+                    }
+                };
+                controlsContainer.appendChild(cell);
+            });
+        });
+        
+        // Prepend to grid-stack-item-content to ensure it's within the flow,
+        // or append to widgetEl for absolute positioning relative to the whole item.
+        // Appending to widgetEl for absolute positioning is better based on CSS.
+        widgetEl.appendChild(controlsContainer);
+
+        // Set initial selected state
+        loadWidgetAlignment(widgetId).then(alignment => {
+            if (alignment) {
+                const selectedCell = controlsContainer.querySelector(`.alignment-cell[data-v="${alignment.vertical}"][data-h="${alignment.horizontal}"]`);
+                if (selectedCell) {
+                    selectedCell.classList.add('selected');
+                }
+            }
+        });
+    }
+
+    function showAlignmentControlsForAllWidgets() {
+        const items = grid.el.children;
+        for (const item of items) {
+            if (item.classList.contains('grid-stack-item')) {
+                const widgetId = item.getAttribute('data-widget-id');
+                if (widgetId) {
+                    createAlignmentControlsForWidget(item, widgetId);
+                }
+            }
+        }
+    }
+
+    function hideAlignmentControlsForAllWidgets() {
+        const controls = document.querySelectorAll('.grid-stack-item .alignment-controls-container');
+        controls.forEach(control => {
+            // Instead of removing, just hide. This preserves them if editing is toggled quickly.
+            // control.remove();
+            control.style.display = 'none'; 
+        });
+    }
 
     return {
         addWidget,

@@ -1,52 +1,36 @@
-.widget-alignment-controls {
+.alignment-controls-container {
     position: absolute;
-    top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: none;
-    gap: 10px;
-    background: var(--widget-border-color, #333);
-    padding: 5px;
-    border-radius: 4px;
-    z-index: 1000;
-}
-
-.editing-enabled .grid-stack-item:hover .widget-alignment-controls {
-    display: flex;
-}
-
-.alignment-group {
-    display: flex;
-    gap: 2px;
-    padding: 2px;
-    background: rgba(0, 0, 0, 0.1);
+    top: 5px;
+    right: 5px;
+    background: rgba(220, 220, 220, 0.95);
+    border: 1px solid #aaa;
     border-radius: 3px;
+    padding: 4px;
+    z-index: 1000;
+    display: grid;
+    grid-template-columns: repeat(3, 20px);
+    grid-template-rows: repeat(3, 20px);
+    gap: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
-.align-btn {
-    border: none;
-    background: transparent;
-    color: white;
-    padding: 4px 8px;
+.alignment-cell {
+    width: 20px;
+    height: 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
     cursor: pointer;
-    border-radius: 2px;
-    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.align-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+.alignment-cell:hover {
+    background-color: #e0e0e0;
 }
 
-.align-btn.active {
-    background: rgba(255, 255, 255, 0.2);
+.alignment-cell.selected {
+    background-color: #007bff;
+    border-color: #0056b3;
 }
-
-.align-btn i {
-    font-size: 14px;
-}
-
-.align-btn img {
-    width: 14px;
-    height: 14px;
-    filter: invert(1); /* Makes the SVG white */
-} 
