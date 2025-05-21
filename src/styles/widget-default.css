@@ -85,32 +85,27 @@ body {
   display: flex;
   flex-direction: column;
 
-  &.align-top-left {
-    align-items: flex-start;
-    justify-content: flex-start;
-  }
-
   &.align-top {
-    align-items: flex-start;
+    justify-content: flex-start;
   }
 
   &.align-middle {
-    align-items: center;
-  }
-
-  &.align-bottom {
-    align-items: flex-end;
-  }
-
-  &.align-left {
-    justify-content: flex-start;
-  }
-
-  &.align-center {
     justify-content: center;
   }
 
-  &.align-right {
+  &.align-bottom {
     justify-content: flex-end;
+  }
+
+  &.align-left {
+    align-items: flex-start;
+  }
+
+  &.align-center {
+    align-items: center;
+  }
+
+  &.align-right {
+    align-items: flex-end;
   }
 }
