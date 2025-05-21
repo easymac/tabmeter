@@ -20,6 +20,48 @@ const V_ALIGNS = ['top', 'middle', 'bottom'];
 const H_ALIGNS = ['left', 'center', 'right'];
 const ALIGNMENT_STORAGE_KEY = 'widgetAlignments';
 
+// Helper function to setup iframe content (alignment and click listeners)
+async function setupIndexFrame(iframe, widgetId, gridItemElement, fnLoadWidgetAlignment, fnApplyAlignmentToWidget) {
+    if (!iframe || !iframe.contentWindow || !iframe.contentWindow.document) {
+        console.warn(`Cannot setup frame for ${widgetId}: iframe or its document not accessible.`);
+        return;
+    }
+
+    // 1. Apply Alignment
+    try {
+        const alignment = await fnLoadWidgetAlignment(widgetId);
+        if (alignment) {
+            fnApplyAlignmentToWidget(widgetId, alignment.vertical, alignment.horizontal, gridItemElement);
+        }
+    } catch (error) {
+        console.warn(`Error loading or applying alignment for ${widgetId} in setupIndexFrame:`, error);
+    }
+
+    // 2. Setup Click Listener for event propagation
+    try {
+        const iframeDocument = iframe.contentDocument || iframe.contentWindow.document; // Already checked above, but good for clarity
+        if (iframeDocument) {
+            // It's generally safer to ensure no duplicate listeners if this could be called multiple times
+            // on the same document instance, but new src means new document, so direct add is usually fine.
+            iframeDocument.addEventListener('click', (iframeEvent) => {
+                const iframeRect = iframe.getBoundingClientRect();
+                const parentClientX = iframeRect.left + iframeEvent.clientX;
+                const parentClientY = iframeRect.top + iframeEvent.clientY;
+                const parentClickEvent = new MouseEvent('click', {
+                    bubbles: true,
+                    cancelable: true,
+                    clientX: parentClientX,
+                    clientY: parentClientY,
+                    view: window
+                });
+                document.dispatchEvent(parentClickEvent);
+            });
+        }
+    } catch (error) {
+        console.warn(`Error setting up click listener for iframe ${widgetId}:`, error);
+    }
+}
+
 export function createLayoutManager(rootElement) {
     const widgetsRoot = rootElement;
     let isDraggable = false;
@@ -88,36 +130,43 @@ export function createLayoutManager(rootElement) {
         removeButton.onclick = () => removeWidget(widget.id);
         gridItem.appendChild(removeButton);
         
-        // Attach click listener to iframe after it loads
-        const iframe = widget.container.querySelector('iframe');
-        if (iframe) {
-            iframe.addEventListener('load', () => {
-                try {
-                    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                    if (iframeDocument) {
-                        iframeDocument.addEventListener('click', (iframeEvent) => {
-                            // Calculate coordinates relative to the parent document
-                            const iframeRect = iframe.getBoundingClientRect();
-                            const parentClientX = iframeRect.left + iframeEvent.clientX;
-                            const parentClientY = iframeRect.top + iframeEvent.clientY;
+        // Assuming widget.container contains the iframe, or is the iframe itself
+        // For consistency with current querying, let's assume iframe is inside widget.container
+        const iframe = widget.container.querySelector('iframe') || (widget.container.tagName === 'IFRAME' ? widget.container : null);
 
-                            // Create and dispatch a new click event in the parent document
-                            const parentClickEvent = new MouseEvent('click', {
-                                bubbles: true,
-                                cancelable: true,
-                                clientX: parentClientX,
-                                clientY: parentClientY,
-                                view: window
-                            });
-                            document.dispatchEvent(parentClickEvent);
-                        });
-                    }
-                } catch (error) {
-                    // Log error if accessing iframe content fails (e.g., cross-origin)
-                    // In this application, iframes are same-origin, but good practice.
-                    console.warn('Error attaching click listener to iframe:', error);
+        if (iframe) {
+            const onInitialLoad = async () => {
+                // Call the shared setup function
+                // setupIndexFrame needs access to loadWidgetAlignment and applyAlignmentToWidget
+                // which are within createLayoutManager's scope.
+                // To solve this, setupIndexFrame was defined outside createLayoutManager,
+                // but it needs those functions or they need to be passed/accessible globally.
+                // For now, let's assume loadWidgetAlignment and applyAlignmentToWidget are accessible
+                // because setupIndexFrame is defined in the same module scope.
+                
+                // We need to ensure that `loadWidgetAlignment` and `applyAlignmentToWidget` are
+                // accessible to `setupIndexFrame`. Let's move `setupIndexFrame` inside `createLayoutManager`
+                // or ensure it gets references to these functions.
+                // For simplicity of this diff, I'm assuming they are found via scope.
+                // This will be handled in the next step by moving setupIndexFrame inside.
+                await _setupIndexFrame(iframe, widget.id, gridItem, loadWidgetAlignment, applyAlignmentToWidget);
+
+
+                // Remove listener after first successful setup to avoid multiple executions if not desired.
+                // However, if index.html itself can trigger 'load' events multiple times without src change,
+                // this might need to be more nuanced. For typical src-based loads, once is fine.
+                iframe.removeEventListener('load', onInitialLoad);
+            };
+            iframe.addEventListener('load', onInitialLoad);
+
+            // If the iframe might have already loaded its content before this listener was attached
+            if (iframe.contentDocument && (iframe.contentDocument.readyState === 'complete' || iframe.contentDocument.readyState === 'interactive')) {
+                if (iframe.src && iframe.src !== 'about:blank') { // Ensure it has a meaningful src
+                     // console.log(`Iframe for ${widget.id} already loaded, attempting setup.`);
+                     // await onInitialLoad(); // This could lead to double execution if load also fires.
+                                           // It's safer to rely on the 'load' event.
                 }
-            });
+            }
         }
         
         await restoreWidgetPosition(widget.id, gridItem);
@@ -341,21 +390,27 @@ export function createLayoutManager(rootElement) {
     }
 
     function closeWidgetSettings(widgetId) {
-        const widget = document.querySelector(`[data-widget-id="${widgetId}"]`);
-        if (!widget) return;
+        const widgetElement = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (!widgetElement) return;
         
-        const iframe = widget.querySelector('iframe');
+        const iframe = widgetElement.querySelector('.grid-stack-item-content iframe'); // Corrected selector
         if (!iframe) return;
         
-        // Switch back to main view
+        const onIndexFrameLoadAfterSettings = async () => {
+            iframe.removeEventListener('load', onIndexFrameLoadAfterSettings);
+            // Call the shared setup function, ensuring it has access to necessary functions
+            await _setupIndexFrame(iframe, widgetId, widgetElement, loadWidgetAlignment, applyAlignmentToWidget);
+        };
+        iframe.addEventListener('load', onIndexFrameLoadAfterSettings);
+        
         const currentSrc = iframe.src;
         iframe.src = currentSrc.replace('settings.html', 'index.html');
         
         // Remove settings mode indicator
-        widget.classList.remove('settings-mode');
+        widgetElement.classList.remove('settings-mode');
         
         // Remove done button
-        const doneButton = widget.querySelector('.settings-done-button');
+        const doneButton = widgetElement.querySelector('.settings-done-button');
         if (doneButton) {
             doneButton.remove();
         }
@@ -510,33 +565,28 @@ export function createLayoutManager(rootElement) {
     }
 
     function applyAlignmentToWidget(widgetId, vAlign, hAlign, widgetEl) {
-        const iframe = widgetEl.querySelector('iframe');
-        if (iframe && iframe.contentDocument && iframe.contentDocument.body) {
-            const body = iframe.contentDocument.body;
-            // Remove existing align-v-* and align-h-* classes (or the old combined ones)
-            body.className = body.className.replace(/\balign-(top|middle|bottom|left|center|right)\b/g, '').trim();
-            body.className = body.className.replace(/\balign-[^-]+-[^-]+\b/g, '').trim(); // Remove old format like align-top-left
-            
-            body.classList.add(`align-${vAlign}`);
-            body.classList.add(`align-${hAlign}`);
-        } else {
-            // console.warn(`Could not apply alignment to widget ${widgetId}: iframe or body not accessible.`);
-            // It might be that the iframe is not loaded yet. Try again in a bit.
-            setTimeout(() => {
-                const freshIframe = widgetEl.querySelector('iframe');
-                if (freshIframe && freshIframe.contentDocument && freshIframe.contentDocument.body) {
-                    const freshBody = freshIframe.contentDocument.body;
-                    freshBody.className = freshBody.className.replace(/\balign-(top|middle|bottom|left|center|right)\b/g, '').trim();
-                    freshBody.className = freshBody.className.replace(/\balign-[^-]+-[^-]+\b/g, '').trim();
-                    freshBody.classList.add(`align-${vAlign}`);
-                    freshBody.classList.add(`align-${hAlign}`);
+        const iframe = widgetEl.querySelector('.grid-stack-item-content iframe'); // Corrected selector
+        if (iframe && iframe.contentWindow && iframe.contentWindow.document) {
+            try {
+                const body = iframe.contentDocument.body;
+                if (body) {
+                    body.className = body.className.replace(/\balign-(top|middle|bottom|left|center|right)\b/g, '').trim();
+                    body.className = body.className.replace(/\balign-[^-]+-[^-]+\b/g, '').trim();
+                    body.classList.add(`align-${vAlign}`);
+                    body.classList.add(`align-${hAlign}`);
                 } else {
-                    console.warn(`Still could not apply alignment to widget ${widgetId} after delay.`);
+                    console.warn(`Body not found in iframe for widget ${widgetId} during alignment.`);
+                    attemptReapply(widgetId, vAlign, hAlign, widgetEl); // Pass widgetEl
                 }
-            }, 500); // Wait for iframe to potentially load
+            } catch (e) {
+                console.warn(`Error accessing iframe body for alignment on widget ${widgetId}:`, e);
+                attemptReapply(widgetId, vAlign, hAlign, widgetEl); // Pass widgetEl
+            }
+        } else {
+            console.warn(`Could not access iframe contentDocument for widget ${widgetId}. Attempting reapply.`);
+            attemptReapply(widgetId, vAlign, hAlign, widgetEl); // Pass widgetEl
         }
 
-        // Update visual state of controls if they exist for this widget
         const controlsContainer = widgetEl.querySelector('.alignment-controls-container');
         if (controlsContainer) {
             const cells = controlsContainer.querySelectorAll('.alignment-cell');
@@ -547,6 +597,25 @@ export function createLayoutManager(rootElement) {
                 }
             });
         }
+    }
+
+    function attemptReapply(widgetId, vAlign, hAlign, widgetEl) { // Added widgetEl parameter
+         setTimeout(() => {
+            const currentIframe = widgetEl.querySelector('.grid-stack-item-content iframe'); // Corrected selector
+            if (currentIframe && currentIframe.contentWindow && currentIframe.contentWindow.document) {
+                try {
+                    const body = currentIframe.contentDocument.body;
+                    body.className = body.className.replace(/\balign-(top|middle|bottom|left|center|right)\b/g, '').trim();
+                    body.className = body.className.replace(/\balign-[^-]+-[^-]+\b/g, '').trim();
+                    body.classList.add(`align-${vAlign}`);
+                    body.classList.add(`align-${hAlign}`);
+                } catch (e) {
+                    console.warn(`Error accessing iframe body for alignment on widget ${widgetId}:`, e);
+                }
+            } else {
+                console.warn(`Could not access iframe contentDocument for widget ${widgetId} during reapply.`);
+            }
+        }, 500); // Wait for iframe to potentially load
     }
 
     function createAlignmentControlsForWidget(widgetEl, widgetId) {
@@ -616,6 +685,43 @@ export function createLayoutManager(rootElement) {
             // control.remove();
             control.style.display = 'none'; 
         });
+    }
+
+    // Define _setupIndexFrame inside createLayoutManager to give it access to other helpers
+    // like loadWidgetAlignment and applyAlignmentToWidget from its lexical scope.
+    async function _setupIndexFrame(iframe, widgetId, gridItemElement, fnLoadWidgetAlignment, fnApplyAlignmentToWidget) {
+        if (!iframe || !iframe.contentWindow || !iframe.contentWindow.document) {
+            console.warn(`Cannot setup frame for ${widgetId}: iframe or its document not accessible.`);
+            return;
+        }
+
+        // 1. Apply Alignment
+        try {
+            const alignment = await fnLoadWidgetAlignment(widgetId);
+            if (alignment) {
+                fnApplyAlignmentToWidget(widgetId, alignment.vertical, alignment.horizontal, gridItemElement);
+            }
+        } catch (error) {
+            console.warn(`Error loading or applying alignment for ${widgetId} in _setupIndexFrame:`, error);
+        }
+
+        // 2. Setup Click Listener for event propagation
+        try {
+            const iframeDocument = iframe.contentDocument; // Already checked above
+            if (iframeDocument) {
+                iframeDocument.addEventListener('click', (iframeEvent) => {
+                    const iframeRect = iframe.getBoundingClientRect();
+                    const parentClientX = iframeRect.left + iframeEvent.clientX;
+                    const parentClientY = iframeRect.top + iframeEvent.clientY;
+                    const parentClickEvent = new MouseEvent('click', {
+                        bubbles: true, cancelable: true, clientX: parentClientX, clientY: parentClientY, view: window
+                    });
+                    document.dispatchEvent(parentClickEvent);
+                });
+            }
+        } catch (error) {
+            console.warn(`Error setting up click listener for iframe ${widgetId} in _setupIndexFrame:`, error);
+        }
     }
 
     return {
