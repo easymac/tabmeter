@@ -3,3 +3,61 @@
     flex-direction: column;
     gap: var(--spacing-md);
 }
+
+/* Empty state styles */
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    padding: var(--spacing-lg);
+}
+
+.empty-state-content {
+    text-align: center;
+    max-width: 300px;
+}
+
+.empty-state-title {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+}
+
+.empty-state-description {
+    margin: 0 0 var(--spacing-lg) 0;
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-base);
+}
+
+.add-first-link {
+    color: var(--color-text);
+    text-decoration: underline;
+    font-size: var(--font-size-base);
+}
+
+.add-first-link:hover {
+    color: var(--color-text-secondary);
+}
+
+/* Link item styles */
+.link-item {
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-duration);
+}
+
+.link-item:hover {
+    background: var(--color-surface-dim);
+}
+
+.link-item a {
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--font-size-base);
+}
+
+.link-item a:hover {
+    color: var(--color-text-secondary);
+}

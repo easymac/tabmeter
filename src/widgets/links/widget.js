@@ -15,7 +15,20 @@ window.addEventListener('message', async (event) => {
 
 function renderLinks() {
     const listElement = document.getElementById('links-list');
+    const emptyStateElement = document.getElementById('empty-state');
+    
     listElement.innerHTML = '';
+    
+    if (links.length === 0) {
+        // Show empty state
+        listElement.style.display = 'none';
+        emptyStateElement.style.display = 'flex';
+        return;
+    }
+    
+    // Show links
+    listElement.style.display = 'flex';
+    emptyStateElement.style.display = 'none';
     
     links.forEach((link, index) => {
         const itemDiv = document.createElement('div');
