@@ -45,11 +45,6 @@
 .link-item {
     padding: var(--spacing-sm);
     border-radius: var(--border-radius-sm);
-    transition: background-color var(--transition-duration);
-}
-
-.link-item:hover {
-    background: var(--color-surface-dim);
 }
 
 .link-item a {
