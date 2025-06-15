@@ -113,3 +113,30 @@
     z-index: 999; /* Lower than context menu (1001) and buttons (1000) but potentially above widget content */
 }
 
+/* Viewport Crosshairs */
+.viewport-crosshairs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 998; /* Below context menus and buttons but above widgets */
+    display: none; /* Hidden by default */
+}
+
+.crosshair {
+    position: absolute;
+    background-color: var(--color-text-secondary);
+    opacity: 0.3;
+}
+
+.crosshair-horizontal {
+    height: 1px;
+    transform: translateY(-0.5px); /* Center the 1px line precisely */
+}
+
+.crosshair-vertical {
+    width: 1px;
+    transform: translateX(-0.5px); /* Center the 1px line precisely */
+}

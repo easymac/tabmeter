@@ -70,6 +70,11 @@ export function createLayoutManager(rootElement) {
     let widgetSelector = null;
     let currentContextMenuWidgetElement = null;
     
+    // Crosshairs elements for viewport center guides
+    let crosshairsContainer = null;
+    let horizontalCrosshair = null;
+    let verticalCrosshair = null;
+    
     // Calculate initial cell height
     let currentCellHeight = Math.round(window.innerHeight / 12);
 
@@ -99,6 +104,61 @@ export function createLayoutManager(rootElement) {
     grid.on('change', (event, items) => {
         saveGridLayout();
     });
+
+    function createCrosshairs() {
+        // Create container for crosshairs
+        crosshairsContainer = document.createElement('div');
+        crosshairsContainer.className = 'viewport-crosshairs';
+        
+        // Create horizontal crosshair
+        horizontalCrosshair = document.createElement('div');
+        horizontalCrosshair.className = 'crosshair crosshair-horizontal';
+        
+        // Create vertical crosshair
+        verticalCrosshair = document.createElement('div');
+        verticalCrosshair.className = 'crosshair crosshair-vertical';
+        
+        crosshairsContainer.appendChild(horizontalCrosshair);
+        crosshairsContainer.appendChild(verticalCrosshair);
+        
+        // Add to document body so it covers the entire viewport
+        document.body.appendChild(crosshairsContainer);
+        
+        // Position crosshairs initially
+        updateCrosshairsPosition();
+    }
+    
+    function updateCrosshairsPosition() {
+        if (!crosshairsContainer) return;
+        
+        // Calculate exact center with proper rounding
+        const centerX = Math.round(window.innerWidth / 2);
+        const centerY = Math.round(window.innerHeight / 2);
+        
+        // Position horizontal crosshair (full width, 1px height, centered vertically)
+        horizontalCrosshair.style.left = '0px';
+        horizontalCrosshair.style.top = `${centerY}px`;
+        horizontalCrosshair.style.width = '100vw';
+        
+        // Position vertical crosshair (1px width, full height, centered horizontally)
+        verticalCrosshair.style.left = `${centerX}px`;
+        verticalCrosshair.style.top = '0px';
+        verticalCrosshair.style.height = '100vh';
+    }
+    
+    function showCrosshairs() {
+        if (!crosshairsContainer) {
+            createCrosshairs();
+        }
+        crosshairsContainer.style.display = 'block';
+        updateCrosshairsPosition();
+    }
+    
+    function hideCrosshairs() {
+        if (crosshairsContainer) {
+            crosshairsContainer.style.display = 'none';
+        }
+    }
 
     function toggleDragging(enable) {
         isDraggable = enable;
@@ -359,8 +419,10 @@ export function createLayoutManager(rootElement) {
 
         if (enable) {
             showAlignmentControlsForAllWidgets();
+            showCrosshairs();
         } else {
             hideAlignmentControlsForAllWidgets();
+            hideCrosshairs();
         }
     }
 
@@ -540,6 +602,9 @@ export function createLayoutManager(rootElement) {
             currentCellHeight = newCellHeight;
             grid.cellHeight(currentCellHeight, true); // true to update existing items
         }
+        
+        // Update crosshairs position on resize
+        updateCrosshairsPosition();
     });
 
     async function saveWidgetAlignment(widgetId, vAlign, hAlign) {
